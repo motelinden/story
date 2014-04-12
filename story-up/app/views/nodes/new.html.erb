@@ -1,0 +1,17 @@
+<div class="container-fluid">
+    <div class="text-center row-fluid">
+      <div class="login-reg-box span12">
+         <p class="top-login-reg"><%= link_to "Back to story", story_path(@story) %></p>
+         <h2 class="page page-header">Follow the story</h2>
+				<%= render 'form' %>
+		</div><!--span12--> 
+  	</div><!--row fluid-->
+</div><!-- container-fluid --> 
+
+<script type="text/javascript">
+	$(function() {
+		$("#node-content").focus(function(){
+			$(this).val("");
+		})
+	})
+</script>

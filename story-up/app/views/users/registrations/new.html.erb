@@ -1,0 +1,107 @@
+<script type="text/javascript">
+	$(function() {
+
+		$("#user_username").change(function(e){
+
+			e.preventDefault();
+
+			$.ajax({
+                url: "<%= users_if_user_exist_path %>",
+                method: "get",
+                dataType: "json",
+                data: {username:$("#user_username").val()},
+                success: function(data) {
+                	console.log("can register");
+                	$(".alert").text("");
+                	return true;
+                },
+                error: function(data){
+                	console.log("already exist");
+                	$(".alert").text("Username already registered, please try another one.");
+                	return false;
+                }
+            });
+            
+		});
+
+		// jquery validate
+
+        // jquery validate
+    $("#new_user").validate({
+        rules: {
+            "user[username]": {
+                required: true
+            },
+            "user[password]": {
+              required: true,
+              minlength: 3
+            },
+            "user[password_confirmation]": {
+              required: true,
+              minlength: 3,
+              equalTo: "#user_password"
+            }
+        },
+
+        highlight: function(element) {
+            $(element).closest(".form-group").addClass('has-error');
+        },
+        unhighlight: function(element) {
+            $(element).closest('.form-group').removeClass('has-error');
+        },
+
+
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function(error, element) {
+            if(element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        submitHandler: function(form) {
+            //jQuery(form).ajaxSubmit(options);
+            form.submit();
+        }
+    });
+
+
+
+	});
+</script>
+
+<div class="container-fluid">
+  	<div class="text-center row-fluid">
+    	<div class="login-reg-box span12">
+		     <p class="top-login-reg">Already a member? <%= link_to "Sign in", new_user_session_path %></p>
+		     <h2 class="page page-header">New user registration</h2>
+		     <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+		     	<%= devise_error_messages! %>
+		     	<p class="notice"><%= notice %></p>
+				<p class="alert"><%= alert %></p>
+		        <div class="form-group">
+		        	<div class="input-group">
+		          	<%= f.text_field :username, autofocus: true, class: "form-control", placeholder: "username" %>
+		          </div>
+		        </div>
+		        <div class="form-group">
+		        	<div class="input-group">
+		          		<%= f.password_field :password, autocomplete: "off", class: "form-control", placeholder: "password" %>
+		          	</div>
+		        </div>
+		        <div class="form-group">
+		        	<div class="input-group">
+		          		<%= f.password_field :password_confirmation, autocomplete: "off", class: "form-control", placeholder: "confirm password" %>
+		          	</div>
+		        </div>
+		        <div class="form-group">
+		        	<%= f.button "Sign up", class: "btn btn-primary", id: "btn-submit" %>
+			    	<input type="reset"  value="Reset" class="btn btn-primary">
+				</div>
+		    <% end %>
+  		</div><!--span12--> 
+	</div><!--row fluid-->
+</div><!-- container-fluid --> 
+
+

@@ -1,0 +1,76 @@
+<div id="welcome-body" class="demo">
+  <div class="container">
+    
+  	<%= render "nav" %>
+    
+    <h1 class=" pager page-header">There are <%= @stories.count %> stories</h1>
+    <div class="row-fluid"> 
+      <!--     <div class="span1" style=" margin-top:20px;"><a class="btn prev"><img src="img/prev.png"></a></div>-->
+      <div class="span12">
+        <div id="owl-demo" class="owl-demo owl-carousel">
+          	<% @stories.each do |story| %>
+  	          <div class="item">
+    	            <p>
+                    <%= link_to story_path(story) do %>
+                    <%= story.story_content %>
+                    <% end %>
+                  </p>
+              </div>
+            <% end %>
+        </div>
+        <!--# owl-demo-->
+        
+        <div class="custom-navigation"> <a class="btn prev">Prev</a> <a class="btn play">Auto</a> <a class="btn stop">Stop</a> <a class="btn next">Next</a> </div>
+        <!--custom-navigation--> 
+        
+      </div>
+      <!--span10--> 
+      
+    </div>
+    <!--demo row-->
+    
+    <div class="add-stories">
+      <p><%= link_to "Start a story", new_story_path %></p>
+    </div>
+    <div class="page-header"></div>
+    <div class="call-us">
+      <p><a href="#">Contact us</a></p>
+    </div>
+  </div>
+  <!--container--> 
+  
+</div>
+<!--demo end--> 
+
+<script>
+    $(document).ready(function() {
+
+      var owl = $("#owl-demo");
+
+      owl.owlCarousel({
+
+      items : 6, //10 items above 1000px browser width
+      itemsDesktop : [1000,4], //5 items between 1000px and 901px
+      itemsDesktopSmall : [900,3], // 3 items betweem 900px and 601px
+      itemsTablet: [600,2], //2 items between 600 and 0;
+      itemsMobile : false // itemsMobile disabled - inherit from itemsTablet option
+      
+      });
+
+      // Custom Navigation Events
+      $(".next").click(function(){
+        owl.trigger('owl.next');
+      })
+      $(".prev").click(function(){
+        owl.trigger('owl.prev');
+      })
+      $(".play").click(function(){
+        owl.trigger('owl.play',1000);
+      })
+      $(".stop").click(function(){
+        owl.trigger('owl.stop');
+      })
+
+
+    });
+</script>

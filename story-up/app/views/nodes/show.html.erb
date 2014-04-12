@@ -1,0 +1,72 @@
+<p id="notice"><%= notice %></p>
+
+<div class="container"  style=" border:2px solid #000000;border-radius: 10px;">
+  <h1 class="pager view_line">Story <%= @node.story.id %></h1>
+  <h2 class=" pagination">Chapter <%= @node.level+1 %><small>(Author: <%= @node.user.username %>)</small></h2>
+  <div class="row">
+    <div class="span12">
+      <p class="story-con-p">
+
+        <%= @node.content %>
+         
+      </p>
+    </div>
+  </div>
+  <div id="node-content" class="row-fluid text-center">
+    <div id="op-rate">
+
+      <%= form_for :node, url: {action: "rate"}, remote: true, html: {id: "rate_story_node_#{@node.id}" } do |f| %>
+          <%= f.button id: "btn-rate" do %>
+            <span class="glyphicon glyphicon-thumbs-up" style="vertical-align: middle"></span> rate
+          <% end %>
+      <% end %>
+
+    </div>
+    <div id="nav">
+      <% if prev?(@node) %>
+        <%= link_to 'Prev', story_node_path(@story, to_prev(@node)) %>
+      <% else %>
+        <span style="color:#e6e6e6">Prev</span>
+      <% end %>
+
+      <%= link_to 'Back', story_path(@story) %>
+
+      <% if next?(@node) %>
+        <%= link_to 'Next', story_node_path(@story, to_next(@node)) %>
+      <% else %>
+        <span style="color:#e6e6e6">Next</span>
+      <% end %>
+    </div>
+    <div id="op-write"><%= link_to 'Continue the story', controller: "nodes", action: "new_follow", id: @node %></div>
+  </div>
+<div class="view_line"></div>
+</div>
+<!--container-->
+
+<script type="text/javascript">
+  
+  $(function(){
+
+    $("#btn-rate").click(function(e){
+
+      e.preventDefault();
+
+      var options = {
+          dataType: "json",
+          success: function(data) {
+            popup("+1", $("#btn-rate"));
+          }
+      };
+
+      var form_id = "#rate_story_node_<%= @node.id %>"
+
+      $(form_id).ajaxForm(options).submit();
+
+      return true;
+
+    });
+
+  })
+
+
+</script>

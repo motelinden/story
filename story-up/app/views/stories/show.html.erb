@@ -1,0 +1,125 @@
+
+
+
+<div class="container border-line">
+    <div class="demo">
+        <div class="container">
+        	<div class="span12" style="float:right; margin-right:20px"><%= link_to "Go back to home", root_path %></div>
+            <h1 class=" pager">
+                Story <%= @story.id %>
+            </h1>
+            <div class="view-line">
+            </div>
+            <h2 class=" pagination">
+                First Chapter
+                <small>
+                    Auther: <%= @story.user.username %>
+                </small>
+            </h2>
+
+            <div class="row">
+                <div class="span12">
+                    <p class="story-con-p">
+                        <%= @story.story_content %>
+                    </p>
+                </div>
+                <div class="span12" style="float:right; margin-right:20px"><%= link_to "Click me to continue the story", new_story_node_path(@story) %></div>
+            </div>
+
+            <% 
+		      max = levels(@story)
+		      if max > 0
+		    %>
+		   	 	<% (1..max).each do |level|  %>
+					<div class="view-line">
+		            </div>
+		            <h2 class=" pagination">
+		                Chapter <%= level+1 %>
+		            </h2>
+		            <div class="row-fluid">
+		                <div class="span12">
+		                    <div id="owl-demo-<%= level %>" class="owl-demo owl-carousel">
+						    <% nodes_at_level(@story, level).each do |node| %>
+
+								<div class="item">
+		                            <p>
+		                            	<%= link_to story_node_path(@story, node) do %>
+		                                	<%= node.content %>
+		                               	<% end %>
+		                            </p>
+		                        </div>
+
+						      <% end %>
+
+						    </div><!--# owl-demo-->
+		            
+			            	<div class="custom-navigation">
+				                <a id="prev-<%= level %>" class="btn prev">
+				                    Prev
+				                </a>
+				                <a id="play-<%= level %>" class="btn play">
+				                    Auto
+				                </a>
+				                <a id="stop-<%= level %>" class="btn stop">
+				                    Stop
+				                </a>
+				                <a id="next-<%= level %>" class="btn next">
+				                    Next
+				                </a>
+			            	</div><!--custom-navigation-->
+		        		</div><!--span12-->
+		    		</div><!--demo row-->
+				<% end %>
+			<% end %>
+        </div>
+        <!--container-->
+    </div>
+    <!--demo end-->
+</div><!-- container -->
+
+<script>
+    $(document).ready(function() {
+
+        var owls = $(".owl-demo");
+
+        owls.each(function() {
+
+        	console.log($(this).attr("id"));
+            id = "#"+ $(this).attr("id");
+            var owl = $(id);
+
+            owl.owlCarousel({
+
+                items: 6,
+                //6 items above 1000px browser width
+                itemsDesktop: [1000, 4],
+                //4 items between 1000px and 901px
+                itemsDesktopSmall: [900, 3],
+                // 3 items betweem 900px and 601px
+                itemsTablet: [600, 2],
+                //2 items between 600 and 0;
+                itemsMobile: false // itemsMobile disabled - inherit from itemsTablet option
+            });
+
+            next_id = "#next-" + id.split("-")[2]
+            pre_id  = "#prev-" + id.split("-")[2]
+            play_id = "#play-" + id.split("-")[2]
+            stop_id = "#stop-" + id.split("-")[2]
+
+            // Custom Navigation Events
+            $(next_id).click(function(){
+	        	owl.trigger('owl.next');
+	      	})
+	      	$(pre_id).click(function(){
+	        	owl.trigger('owl.prev');
+	      	})
+	      	$(play_id).click(function(){
+	        	owl.trigger('owl.play',1000);
+	      	})
+	      	$(stop_id).click(function(){
+	        	owl.trigger('owl.stop');
+	      	})
+        });
+
+    });
+</script>
