@@ -157,6 +157,7 @@ if (typeof Object.create !== "function") {
             if (typeof base.options.afterUpdate === "function") {
                 base.options.afterUpdate.apply(this, [base.$elem]);
             }
+
         },
 
         reload : function () {
@@ -164,6 +165,7 @@ if (typeof Object.create !== "function") {
             window.setTimeout(function () {
                 base.updateVars();
             }, 0);
+
         },
 
         watchVisibility : function () {
@@ -290,7 +292,7 @@ if (typeof Object.create !== "function") {
                     }, base.options.responsiveRefreshRate);
                 }
             };
-            $(window).resize(base.resizer);
+            $(window).resize(base.resizer);  
         },
 
         updatePosition : function () {
@@ -310,6 +312,7 @@ if (typeof Object.create !== "function") {
                 var $this = $(this);
                 $this
                     .css({"width": base.itemWidth})
+                    /*.css({"height": base.itemWidth})*/
                     .data("owl-item", Number(index));
 
                 if (index % base.options.items === 0 || index === lastItem) {
@@ -319,6 +322,21 @@ if (typeof Object.create !== "function") {
                 }
                 $this.data("owl-roundPages", roundPages);
             });
+
+            // size item
+            $(".owl-item .item").css("width", base.itemWidth - 15);
+            $(".owl-item .item").css("height",base.itemWidth - 15);
+
+            // if in small screen, hide navigation arrows
+            console.log("screen width: " + $(window).width());
+            if($(window).width() <= 1000) {
+                $(".left-arrow").fadeOut("slow");
+                $(".right-arrow").fadeOut("slow");
+            } else {
+                $(".left-arrow").fadeIn("slow");
+                $(".right-arrow").fadeIn("slow");
+            }
+
         },
 
         appendWrapperSizes : function () {
@@ -1473,7 +1491,7 @@ if (typeof Object.create !== "function") {
         rewindNav : true,
         scrollPerPage : false,
 
-        pagination : true,
+        pagination : false,
         paginationNumbers : false,
 
         responsive : true,

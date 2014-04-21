@@ -1,6 +1,6 @@
 StoryUp::Application.routes.draw do
 
-  devise_for :users, controllers: {registrations: "users/registrations"}
+  devise_for :users, controllers: {registrations: "users/registrations", sessions: "users/sessions"}
 
   devise_scope :user do
     get 'users/if_user_exist', to: "users/registrations#if_user_exist?"
@@ -26,8 +26,12 @@ StoryUp::Application.routes.draw do
       end
   end
 
+  resources :users do
+    collection do
+      get ':id/stories' => "users#stories"
+    end
+  end
   resources :statistics
-
   resources :user_actions
 
   # Example of regular route:

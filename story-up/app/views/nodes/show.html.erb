@@ -1,10 +1,15 @@
 <p id="notice"><%= notice %></p>
+<div class="container-fluid demo">
 
-<div class="container"  style=" border:2px solid #000000;border-radius: 10px;">
-  <h1 class="pager view_line">Story <%= @node.story.id %></h1>
-  <h2 class=" pagination">Chapter <%= @node.level+1 %><small>(Author: <%= @node.user.username %>)</small></h2>
-  <div class="row">
-    <div class="span12">
+  <%= render "welcome/nav2" %>
+  <%= render "users/registrations/modal" %>
+  <%= render "users/sessions/modal" %>
+  <%= render "modal", object: @node %>
+
+  <h1 class="pager view-line"><p>Story <%= @node.story.id %></p></h1>
+  <h2 class=" pagination">Chapter <%= @node.level %><small>(Author: <%= @node.user.username %>)</small></h2>
+  <div class="row story-container">
+    <div class="col-md-12">
       <p class="story-con-p">
 
         <%= @node.content %>
@@ -13,10 +18,11 @@
     </div>
   </div>
   <div id="node-content" class="row-fluid text-center">
+    
     <div id="op-rate">
 
       <%= form_for :node, url: {action: "rate"}, remote: true, html: {id: "rate_story_node_#{@node.id}" } do |f| %>
-          <%= f.button id: "btn-rate" do %>
+          <%= f.button id: "btn-rate", class: "btn btn-default" do %>
             <span class="glyphicon glyphicon-thumbs-up" style="vertical-align: middle"></span> rate
           <% end %>
       <% end %>
@@ -37,9 +43,11 @@
         <span style="color:#e6e6e6">Next</span>
       <% end %>
     </div>
-    <div id="op-write"><%= link_to 'Continue the story', controller: "nodes", action: "new_follow", id: @node %></div>
+    <div id="op-write">
+      <a href="#" id="new-story-node">Continue the story</a>
+    </div>
   </div>
-<div class="view_line"></div>
+<div class="view-line"></div>
 </div>
 <!--container-->
 
@@ -47,10 +55,11 @@
   
   $(function(){
 
+    // rate click
     $("#btn-rate").click(function(e){
 
       e.preventDefault();
-
+      var form_id = "#rate_story_node_<%= @node.id %>"
       var options = {
           dataType: "json",
           success: function(data) {
@@ -58,14 +67,11 @@
           }
       };
 
-      var form_id = "#rate_story_node_<%= @node.id %>"
-
       $(form_id).ajaxForm(options).submit();
 
       return true;
 
     });
-
   })
 
 

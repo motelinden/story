@@ -40,6 +40,7 @@
 .owl-carousel .owl-item{
 	float: left;
 }
+
 .owl-controls .owl-page,
 .owl-controls .owl-buttons div{
 	cursor: pointer;

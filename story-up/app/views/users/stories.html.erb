@@ -1,0 +1,32 @@
+<h1 class="pager">My Stories</h1>
+<div class="container-fluid demo">
+    <%= render "welcome/nav2" %>
+    
+    <% if @nodes.nil? %>
+        <!-- have no stories -->
+    <% else %>
+      <% @nodes.each do |node| %>
+        <h1 class="pager view-line"></h1>
+        <h2 class="pagination">
+            <%= link_to story_path(node.story) do %>Story <%= node.story.id %><% end %>
+            <small>
+                <!-- (有6个人接着你的往下写了，有12条评论)（有8条新评论） -->
+                (there are <%= node_followers(node) %> users who continued your story)
+            </small>
+        </h2>
+        <h2 class="pager">
+            <%= link_to story_node_path(node.story, node) do %>Chapter <%= node.level %><% end %>
+            
+        </h2>
+        <div class="story-con">
+            <p class="story-con-p">
+                <%= node.content %>
+            </p>
+        </div>
+      <% end %>
+    <% end %>
+
+
+    <div class="view-line">
+    </div>
+</div>

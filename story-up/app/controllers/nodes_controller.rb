@@ -1,5 +1,5 @@
 class NodesController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:index, :show, :rate]
   before_action :set_node, only: [:show, :edit, :update, :destroy]
 
   # GET /nodes
@@ -53,7 +53,7 @@ class NodesController < ApplicationController
     Statistic.create_or_update_story_statistic(@story, @user_action)
 
     respond_to do |format|
-        format.html { @node }
+        format.html { head :ok }
         format.json { render json: @node, status: :ok}
     end
 
@@ -68,10 +68,13 @@ class NodesController < ApplicationController
     @node.story     = @story
     @node.user_id   = current_user.id
 
+    @parent         = Node.where("nodes.story_id = ? AND nodes.level = 1", @story.id).first
+    @node.parent    = @parent
+
     respond_to do |format|
       if @node.save
-        format.html { redirect_to story_path(@story), notice: 'Node was successfully created.' }
-        format.json { render action: 'show', status: :created, location: story_nodes_path(@story) }
+        format.html { redirect_to story_path(@story), notice: 'Your story was successfully created.' }
+        format.json { render json: @node, status: :created }
       else
         format.html { render action: 'new' }
         format.json { render json: @node.errors, status: :unprocessable_entity }

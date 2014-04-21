@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20140412081755) do
     t.integer  "story_id",                null: false
     t.integer  "parent_id"
     t.integer  "user_id",                 null: false
-    t.integer  "level",      default: 1,  null: false
+    t.integer  "level",      default: 2,  null: false
     t.text     "path"
     t.text     "content",    default: "", null: false
     t.datetime "created_at"
