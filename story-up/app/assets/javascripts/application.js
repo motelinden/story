@@ -61,11 +61,13 @@ function initCarousel(owl, next_id, pre_id) {
        itemsMobile : false // itemsMobile disabled - inherit from itemsTablet option
     });
 
-    // Custom Navigation Events
-    $(next_id).click(function(){
-        owl.trigger('owl.next');
-    })
-    $(pre_id).click(function(){
-        owl.trigger('owl.prev');
-    })
+    if(next_id != "" && pre_id != "") {
+      // Custom Navigation Events
+      $(next_id).click(function(){
+          owl.trigger('owl.next');
+      })
+      $(pre_id).click(function(){
+          owl.trigger('owl.prev');
+      })
+    }
 }

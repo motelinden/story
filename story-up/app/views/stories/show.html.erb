@@ -39,9 +39,9 @@
 	            </h2>
 	            <div id="nodes" class="row story-container" > 
 
-                    <a id="prev-level-<%= level %>"><div class="left-arrow"></div></a>
+                  <!-- <a id="prev-level-<= level %>"><div class="left-arrow"></div></a> -->
 
-	                <div class="col-md-10 owl-content">
+	                <div class="col-md-12 owl-content">
 
 	                    <div id="owl-demo-<%= level %>" class="owl-demo owl-carousel">
           					    <% nodes_at_level(@story, level).each do |node| %>
@@ -60,7 +60,8 @@
 	           
 	        		</div><!--col-md-10-->
 
-                    <a id="next-level-<%= level %>"><div class="right-arrow"></div></a>
+              <!-- <a id="next-level-<= level %>"><div class="right-arrow"></div></a> -->
+
 	    		</div><!--nodes row-->
 			<% end %>
 		<% end %>
@@ -78,10 +79,10 @@ $(function() {
       id = "#"+ $(this).attr("id");
       var owl = $(id);
 
-      next_id = "#next-level-" + id.split("-")[2];
-      pre_id  = "#prev-level-" + id.split("-")[2];
+/*      next_id = "#next-level-" + id.split("-")[2];
+      pre_id  = "#prev-level-" + id.split("-")[2];*/
 
-      initCarousel(owl, next_id, pre_id);
+      initCarousel(owl, "", "");
 
   });
 

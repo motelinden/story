@@ -9,7 +9,7 @@
         <h1 class="pager view-line"></h1>
         <h2 class="pagination">
             <%= link_to story_path(node.story) do %>Story <%= node.story.id %><% end %>
-            <small>
+            <small class="news">
                 <!-- (有6个人接着你的往下写了，有12条评论)（有8条新评论） -->
                 (there are <%= node_followers(node) %> users who continued your story)
             </small>
