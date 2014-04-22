@@ -1,0 +1,86 @@
+<div id="welcome-body" class="demo">
+
+  <%= render "nav" %>
+  <%= render "users/registrations/modal" %>
+  <%= render "users/sessions/modal" %>
+  <%= render "stories/modal" %>
+
+  <div class="container-fluid">
+
+      <h1 class="pager page-header"><p>There are <%= @stories.count %> stories...</p></h1>
+
+      <div class="row story-container" > 
+
+        <!-- <a id="prev"><div class="left-arrow"></div></a> -->
+
+        <div class="col-md-12 owl-content">
+          <div id="owl-demo" class="owl-demo owl-carousel">
+            	<% @stories.each do |story| %>
+    	          <div class="item">
+                    <%= link_to story_path(story) do %>
+        	            <p id="item-p-<%= story.id %>">     
+                        <%= short_text(50, story.story_content) %>
+                      </p>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>
+          <!--# owl-demo-->
+          
+          <!-- <div class="custom-navigation"> <a class="btn prev">Prev</a> <a class="btn play">Auto</a> <a class="btn stop">Stop</a> <a class="btn next">Next</a> </div> -->
+          <!--custom-navigation--> 
+          
+       </div><!--col-md-10--> 
+
+       <!-- <a id="next"><div class="right-arrow"></div></a> -->
+        
+      </div><!--row fluid-->
+      
+      <div class="add-stories">
+        <p><a href="#" id="new-story">Start a new story</a></p>
+      </div>
+      <div class="page-header"></div>
+
+    </div><!--container--> 
+
+  <%= render "bottom" %>
+  
+</div>
+<!--demo end--> 
+
+<script>
+    $(function() {
+
+      var owl = $("#owl-demo");
+      /*var next_id = "#next";
+      var prev_id ="#prev";*/
+
+      initCarousel(owl, "", "");
+
+      owl.trigger('owl.play',2000);
+
+      //size item
+      /*var width = $(".owl-item .item").css("width");
+      $(".owl-item .item").css("height",width);*/
+
+      console.log("ready");
+
+      /*$(".story-container").mouseover(function(){
+        $(".left-arrow").show();
+        $(".right-arrow").show();
+      });
+
+      $(".story-container").mouseout(function(){
+        $(".left-arrow").hide();
+        $(".right-arrow").hide();
+      });*/
+    });
+
+    /*    
+    window.addEventListener('resize:end', function(event) {
+      //size item
+      $(".owl-item").css("width","auto");
+
+    }, false);*/
+
+</script>

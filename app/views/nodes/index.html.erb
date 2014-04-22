@@ -1,0 +1,41 @@
+<h1>Listing nodes</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Level</th>
+      <th>Content</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    <tr>
+      <td>Level: 1</td>
+      <td><%= @story.story_content %></td>
+      <td><%= link_to 'Show',   story_path(@story) %></td>
+      <td><%= link_to 'Continue the stroy', new_story_node_path(@story) %>
+    </tr>
+
+    <% 
+      max = levels(@story)
+      (1..max).each do |level| 
+    %>
+
+    <% nodes_at_level(@story, level).each do |node| %>
+        <tr>
+          <td>Level: <%= level %></td>
+          <td><%= node.content %></td>
+          <td><%= link_to 'Show',   story_node_path(@story, node) %></td>
+          <td><%= link_to 'Follow', controller: "nodes", action: "new_follow", id: node %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Node', new_story_node_path(@story) %>
