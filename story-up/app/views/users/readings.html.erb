@@ -1,8 +1,7 @@
-<div class="demo">
+<div class="demo" >
     <%= render "welcome/nav2" %>
-    <div class="container-fluid demo">
-        <h1 class="pager page-title">My Stories</h1>
-        
+    <div class="container-fluid">
+        <h1 class="pager page-title">My Readings</h1>
         <% if @stories.nil? %>
             <!-- have no stories -->
         <% else %>
@@ -19,29 +18,32 @@
                         <div class="col-md-12 owl-content">
 
                             <div id="owl-demo-<%= story.id %>" class="owl-demo owl-carousel">
-                                    <% my_stories(story).each do |node| %>
+                                    <% @nodes.each do |node| %>
 
-                                        <div class="item-body">
+                                        <% if node.story_id == story.id %>
 
-                                            <div class="item-level">
-                                                Chapter <%= node.level %>
+                                            <div class="item-body">
+
+                                                <div class="item-level">
+                                                    Chapter <%= node.level %>
+                                                </div>
+
+                                                <div class="item">
+                
+                                                    <p>
+                                                        <%= link_to story_node_path(story, node) do %>
+                                                            <%= short_text(50, node.content) %>
+                                                        <% end %>
+                                                    </p>
+
+                                                </div>
+
+                                                <div class="item-follows">
+                                                    <%= node_followers(node) %> follows
+                                                </div>
+
                                             </div>
-
-                                            <div class="item">
-            
-                                                <p>
-                                                    <%= link_to story_node_path(story, node) do %>
-                                                        <%= short_text(50, node.content) %>
-                                                    <% end %>
-                                                </p>
-
-                                            </div>
-
-                                            <div class="item-follows">
-                                                <%= node_followers(node) %> follows
-                                            </div>
-
-                                        </div>
+                                        <% end %>
 
                                      <% end %>
 
@@ -61,7 +63,8 @@
         <div class="view-line">
         </div>
     </div>
-</div> <!-- demo -->
+</div><!-- demo -->
+
 <script type="text/javascript">
 
     $(function() {

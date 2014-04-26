@@ -6,7 +6,7 @@ class UserAction < ActiveRecord::Base
 		@user_action = UserAction.new
 	    @user_action.story = story
 
-	    unless node.nil?
+	    if not node.nil?
 	    	@user_action.node_id = node.id
 	    end
 

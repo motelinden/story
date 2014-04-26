@@ -1,5 +1,7 @@
 StoryUp::Application.routes.draw do
 
+  resources :comments
+
   devise_for :users, controllers: {registrations: "users/registrations", sessions: "users/sessions"}
 
   devise_scope :user do
@@ -29,6 +31,7 @@ StoryUp::Application.routes.draw do
   resources :users do
     collection do
       get ':id/stories' => "users#stories"
+      get ':id/readings' => "users#readings"
     end
   end
   resources :statistics
