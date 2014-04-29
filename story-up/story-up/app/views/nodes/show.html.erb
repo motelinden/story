@@ -1,0 +1,133 @@
+<div class="demo">
+  <%= render "welcome/nav2" %>
+  <div class="node container-fluid">
+
+    <%= render "users/registrations/modal" %>
+    <%= render "users/sessions/modal" %>
+    <%= render "modal", object: @node %>
+
+    <h1 class="pager page-title">Story <%= @node.story.id %></h1>
+    <div class="view-line"></div>
+    <h2 class=" pagination">Chapter <%= @node.level %><small>(Author: <%= @node.user.username %>)</small></h2>
+    <div class="row story-container">
+      <div class="col-md-12">
+        <p class="story-con-p">
+
+          <%= @node.content %>
+           
+        </p>
+      </div>
+    </div>
+    <div id="node-content" class="row-fluid text-center">
+      
+      <div id="op-rate">
+
+        <%= form_for :node, url: {action: "rate"}, remote: true, html: {id: "rate_story_node_#{@node.id}" } do |f| %>
+            <%= f.button id: "btn-rate", class: "btn btn-default" do %>
+              <span class="glyphicon glyphicon-thumbs-up" style="vertical-align: middle"></span> rate
+            <% end %>
+        <% end %>
+
+      </div>
+      <div id="nav">
+        <% if prev?(@node) %>
+          <%= link_to 'Prev', story_node_path(@story, to_prev(@node)) %>
+        <% else %>
+          <span style="color:#e6e6e6">Prev</span>
+        <% end %>
+
+        <%= link_to 'Back', story_path(@story) %>
+
+        <% if next?(@node) %>
+          <%= link_to 'Next', story_node_path(@story, to_next(@node)) %>
+        <% else %>
+          <span style="color:#e6e6e6">Next</span>
+        <% end %>
+      </div>
+      <div id="op-write">
+        <a href="#" id="new-story-node">Continue the story</a>
+      </div>
+    </div>
+  <div class="view-line"></div>
+  </div><!--container-->
+
+  <%= render "comments" %>
+
+
+</div><!-- demo -->
+
+<script type="text/javascript">
+  
+  $(function(){
+
+    // comment submit
+    /*$("#btn-comment").click(function(e){
+
+      e.preventDefault ? e.preventDefault() : e.returnValue = false; 
+    });*/
+
+    // rate click
+    $("#btn-rate").click(function(e){
+
+      e.preventDefault();
+      var form_id = "#rate_story_node_<%= @node.id %>"
+      var options = {
+          dataType: "json",
+          success: function(data) {
+            popup("+1", $("#btn-rate"));
+          }
+      };
+
+      $(form_id).ajaxForm(options).submit();
+
+      return true;
+
+    });
+
+    $("#new_comment").validate({
+      rules: {
+              "comment[content]": {
+                  required: true,
+                  maxlength: 100,
+                  minlength: 10
+              },
+      },
+
+      highlight: function(element) {
+          $(element).closest(".form-group").addClass('has-error');
+      },
+      unhighlight: function(element) {
+          $(element).closest('.form-group').removeClass('has-error');
+      },
+
+      errorElement: 'span',
+      errorClass: 'help-block',
+      errorPlacement: function(error, element) {
+          if(element.parent('.input-group').length) {
+              error.insertAfter(element.parent());
+          } else {
+              error.insertAfter(element.parent());
+          }
+      },
+
+      submitHandler: function(form) {
+
+        var options = {
+          dataType: 'json',
+          success: function(data) {
+              // TODO
+              // fill variables
+              var username = data["user_id"] == -1 ? "Anonymous" : data
+              var comment = '<p><strong>Commenter:</strong><span class="comment"> ' + data["username"] + '</span></p><p><strong>Comment:</strong><span class="comment"> ' + data["content"] + '</span></p>';
+              $("#comment-list").append(comment);
+              console.log(data);
+            }
+        };
+        jQuery(form).ajaxSubmit(options);
+      }
+  });
+
+  })
+
+
+</script>

@@ -1,0 +1,35 @@
+<h1>Listing stories</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Story content</th>
+      <th>User</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @stories.each do |story| %>
+      <tr>
+      
+        <td><%= story.story_content %></td>
+        <td>
+          <% unless story.user.nil? %>
+          <%= story.user.username %>
+          <% end %>
+        </td>
+
+        <td><%= link_to 'Continue the stroy', new_story_node_path(story) %>
+        <td><%= link_to 'Show', story %></td>
+      
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Story', new_story_path %>

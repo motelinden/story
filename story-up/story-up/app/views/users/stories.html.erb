@@ -1,0 +1,92 @@
+<div class="demo">
+    <%= render "welcome/nav2" %>
+    <div class="container-fluid demo">
+        <h1 class="pager page-title">My Stories</h1>
+        
+        <% if @stories.nil? %>
+            <!-- have no stories -->
+        <% else %>
+          <% @stories.each do |story| %>
+            <h1 class="pager view-line"></h1>
+            <h2 class="pagination">
+                <%= link_to story_path(story) do %>Story <%= story.id %><% end %>
+            </h2>
+
+            <div id="nodes" class="row story-container" > 
+
+                        <!-- <a id="prev-level-<= level %>"><div class="left-arrow"></div></a> -->
+
+                        <div class="col-md-12 owl-content">
+
+                            <div id="owl-demo-<%= story.id %>" class="owl-demo owl-carousel">
+                                    <% my_stories(story).each do |node| %>
+
+                                        <div class="item-body">
+
+                                            <div class="item-level">
+                                                Chapter <%= node.level %>
+                                            </div>
+
+                                            <div class="item">
+            
+                                                <p>
+                                                    <%= link_to story_node_path(story, node) do %>
+                                                        <%= short_text(50, node.content) %>
+                                                    <% end %>
+                                                </p>
+
+                                            </div>
+
+                                            <div class="item-follows">
+                                                <%= node_followers(node) %> follows
+                                            </div>
+
+                                        </div>
+
+                                     <% end %>
+
+                                 </div><!--# owl-demo-->
+                   
+                        </div><!--col-md-10-->
+
+                        <!-- <a id="next-level-<= level %>"><div class="right-arrow"></div></a> -->
+
+                    </div><!--nodes row-->
+
+
+          <% end %>
+        <% end %>
+
+
+        <div class="view-line">
+        </div>
+    </div>
+</div> <!-- demo -->
+<script type="text/javascript">
+
+    $(function() {
+
+        var owls = $(".owl-demo");
+
+        owls.each(function() {
+
+            console.log($(this).attr("id"));
+            id = "#"+ $(this).attr("id");
+            var owl = $(id);
+
+            initCarousel(owl, "", "");
+
+        });
+
+      /*$(".story-container").mouseover(function(){
+        $(".left-arrow").show();
+        $(".right-arrow").show();
+      });
+
+      $(".story-container").mouseout(function(){
+        $(".left-arrow").hide();
+        $(".right-arrow").hide();
+      });*/
+    });
+
+</script>
