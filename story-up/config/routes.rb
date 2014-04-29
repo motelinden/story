@@ -25,6 +25,8 @@ StoryUp::Application.routes.draw do
           get  ':id/new_follow' => "nodes#new_follow"
           post ':id/follow_up'  => "nodes#follow_up"
         end
+        resources :comments do
+        end
       end
   end
 

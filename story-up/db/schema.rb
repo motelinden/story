@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140426050034) do
+ActiveRecord::Schema.define(version: 20140427103218) do
 
   create_table "actions", force: true do |t|
     t.integer  "story_id"
@@ -73,6 +73,7 @@ ActiveRecord::Schema.define(version: 20140426050034) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "follows",    default: 0, null: false
+    t.integer  "comments",   default: 0, null: false
   end
 
   add_index "statistics", ["node_id"], name: "index_statistics_on_node_id"
