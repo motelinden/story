@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140426050034) do
+ActiveRecord::Schema.define(version: 20140412081755) do
 
   create_table "actions", force: true do |t|
     t.integer  "story_id"
@@ -25,20 +25,6 @@ ActiveRecord::Schema.define(version: 20140426050034) do
   add_index "actions", ["node_id"], name: "index_actions_on_node_id"
   add_index "actions", ["story_id"], name: "index_actions_on_story_id"
   add_index "actions", ["user_id"], name: "index_actions_on_user_id"
-
-  create_table "comments", force: true do |t|
-    t.integer  "user_id",                 null: false
-    t.integer  "story_id",                null: false
-    t.integer  "node_id",                 null: false
-    t.integer  "parent_id"
-    t.text     "content",    default: "", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "comments", ["node_id"], name: "index_comments_on_node_id"
-  add_index "comments", ["story_id"], name: "index_comments_on_story_id"
-  add_index "comments", ["user_id"], name: "index_comments_on_user_id"
 
   create_table "nodes", force: true do |t|
     t.integer  "story_id",                null: false
@@ -72,7 +58,6 @@ ActiveRecord::Schema.define(version: 20140426050034) do
     t.integer  "rating",     default: 0, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "follows",    default: 0, null: false
   end
 
   add_index "statistics", ["node_id"], name: "index_statistics_on_node_id"

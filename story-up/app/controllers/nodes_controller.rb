@@ -101,13 +101,6 @@ class NodesController < ApplicationController
     @node.path     = "#{@parent.path}, #{@parent.id}"
     @node.user_id  = current_user.id
 
-    # TODO follows statistics
-    # 1. add follows action
-    @user_action = UserAction.record_action(@story, @parent, current_user, 3)
-
-    # 2. add or update reading activity statistics
-    Statistic.create_or_update_story_statistic(@story, @user_action)
-
     respond_to do |format|
       if @node.save
         format.html { redirect_to story_path(@story), notice: "You just follow up." }

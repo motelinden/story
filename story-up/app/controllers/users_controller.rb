@@ -5,15 +5,7 @@ class UsersController < ApplicationController
 	end
 
 	def stories
-		@stories = Story.all
-	end
-
-	def readings
-		time = 3.days.ago
-		p "#{time}"
-		@stories = Story.joins(:user_actions).where("user_actions.user_id = ? AND user_actions.action_type = ? 
-			AND user_actions.created_at > ?", current_user.id, 2, time).distinct("stories.id")
-		@nodes = Node.joins(:user_actions).where("user_actions.user_id = ? AND user_actions.action_type = ? 
-			AND user_actions.created_at > ?", current_user.id, 2, time).distinct("nodes.id")
+		@stories = Story.where("stories.user_id = ?", current_user.id)
+		@nodes 	 = Node.where("nodes.user_id  = ?", current_user.id)
 	end
 end

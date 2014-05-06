@@ -1,74 +1,72 @@
-<div class="demo">
-  <%= render "welcome/nav2" %>
-  <div class="container-fluid">
+<div class="container-fluid demo">
 
-      <%= render "users/registrations/modal" %>
-      <%= render "users/sessions/modal" %>
-      <%= render "nodes/modal", object: @story %>
+    <%= render "welcome/nav2" %>
+    <%= render "users/registrations/modal" %>
+    <%= render "users/sessions/modal" %>
+    <%= render "nodes/modal", object: @story %>
 
-      <div class="container-fluid">
-          <h1 class="pager page-title">
-              <p>Story <%= @story.id %></p>
-          </h1>
-          <div class="view-line">
-          </div>
-          <h2 class=" pagination">
-              First Chapter
-              <small>
-                  (Author: <%= @story.user.username %>)
-              </small>
-          </h2>
+    <div class="container-fluid">
+        <h1 class=" pager">
+            <p>Story <%= @story.id %></p>
+        </h1>
+        <div class="view-line">
+        </div>
+        <h2 class=" pagination">
+            First Chapter
+            <small>
+                (Author: <%= @story.user.username %>)
+            </small>
+        </h2>
 
-          <div id="story" class="row story-container">
-              <div class="col-md-12">
-                  <p class="story-con-p">
-                      <%= @story.story_content %>
-                  </p>
-              </div>
-              <a href="#" id="new-story-node" class="bottom-right-1">Continue the story</a>
-          </div>
+        <div id="story" class="row story-container">
+            <div class="col-md-12">
+                <p class="story-con-p">
+                    <%= @story.story_content %>
+                </p>
+            </div>
+            <a href="#" id="new-story-node" class="bottom-right-1">Continue the story</a>
+        </div>
 
-          <% 
-  	      max = levels(@story)
-  	      if max > 0
-  	    %>
-  	   	 	<% (2..max).each do |level|  %>
-  				<div class="view-line">
-  	            </div>
-  	            <h2 class=" pagination">
-  	                Chapter <%= level %>
-  	            </h2>
-  	            <div id="nodes" class="row story-container" > 
+        <% 
+	      max = levels(@story)
+	      if max > 0
+	    %>
+	   	 	<% (2..max).each do |level|  %>
+				<div class="view-line">
+	            </div>
+	            <h2 class=" pagination">
+	                Chapter <%= level %>
+	            </h2>
+	            <div id="nodes" class="row story-container" > 
 
-                    <!-- <a id="prev-level-<= level %>"><div class="left-arrow"></div></a> -->
+                  <!-- <a id="prev-level-<= level %>"><div class="left-arrow"></div></a> -->
 
-  	                <div class="col-md-12 owl-content">
+	                <div class="col-md-12 owl-content">
 
-  	                    <div id="owl-demo-<%= level %>" class="owl-demo owl-carousel">
-            					    <% nodes_at_level(@story, level).each do |node| %>
+	                    <div id="owl-demo-<%= level %>" class="owl-demo owl-carousel">
+          					    <% nodes_at_level(@story, level).each do |node| %>
 
-            							<div class="item">
-                              <p>
-                              	<%= link_to story_node_path(@story, node) do %>
-                                  	<%= short_text(50, node.content) %>
-                                 	<% end %>
-                              </p>
-                          </div>
+          							<div class="item">
+                            <p>
+                            	<%= link_to story_node_path(@story, node) do %>
+                                	<%= short_text(50, node.content) %>
+                               	<% end %>
+                            </p>
+                        </div>
 
-  					             <% end %>
+					             <% end %>
 
-  					         </div><!--# owl-demo-->
-  	           
-  	        		</div><!--col-md-10-->
+					         </div><!--# owl-demo-->
+	           
+	        		</div><!--col-md-10-->
 
-                <!-- <a id="next-level-<= level %>"><div class="right-arrow"></div></a> -->
+              <!-- <a id="next-level-<= level %>"><div class="right-arrow"></div></a> -->
 
-  	    		</div><!--nodes row-->
-  			<% end %>
-  		<% end %>
-      </div><!--container-->
-  </div><!-- container -->
-</div> <!--demo-->
+	    		</div><!--nodes row-->
+			<% end %>
+		<% end %>
+    </div><!--container-->
+</div><!-- container -->
 
 <script type="text/javascript">
 $(function() {
