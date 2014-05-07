@@ -1,7 +1,15 @@
 class UsersController < ApplicationController
-	before_action :authenticate_user!
+#	before_action :authenticate_user!
 
 	def show 
+		 @user  = User.find(params[:id])
+
+    # no matter or what, show the story
+    respond_to do |format|
+        format.html { @user }
+       # format.json { render action: 'show', location: @node}
+        format.json { render json: @user, status: :ok}
+    end
 	end
 
 	def stories

@@ -4,57 +4,120 @@
   <%= render "welcome/nav2" %>
   <%= render "users/registrations/modal" %>
   <%= render "users/sessions/modal" %>
-  <%= render "modal", object: @node %>
-
+ 
+   <%= render "modal", object: @node %>
+ 
   <h1 class="pager view-line"><p>Story <%= @node.story.id %></p></h1>
-  <h2 class=" pagination">Chapter <%= @node.level %><small>(Author: <%= @node.user.username %>)</small></h2>
-  <div class="row story-container">
-    <div class="col-md-12">
-      <p class="story-con-p">
-
-        <%= @node.content %>
-         
-      </p>
-    </div>
+  <div  id='storyNode'></div>
+  <div id='storyNodeTemplate'>
+		  <h2 class=" pagination" id='nodeChapter'></h2>
+		  <div class="row story-container">
+		    <div class="col-md-12">
+		      <p class="story-con-p" id='noedContent'>
+		
+		        
+		         
+		      </p>
+		    </div>
+		  </div>
+		  <div id="node-content" class="row-fluid text-center">
+		    
+		    <div id="op-rate">
+		
+		      <%= form_for :node, url: {action: "rate"}, remote: true, html: {id: "rate_story_node_" } do |f| %>
+		          <%= f.button id: "btn-rate", class: "btn btn-default" do %>
+		            <span class="glyphicon glyphicon-thumbs-up" style="vertical-align: middle"></span> rate
+		          <% end %>
+		      <% end %>
+		
+		    </div>
+		 
+		    <div id="op-write">
+		      <a href="#" id="new-story-node">Continue the story</a>
+		    </div>
+    </div> <!--storyNode end -->
   </div>
-  <div id="node-content" class="row-fluid text-center">
-    
-    <div id="op-rate">
+  <div  class="container-fluid" id='nodeSubListTemplate' >
+ 					<h2 class=" pagination" id='nodeSubChapter'></h2>
+ 					<div class="row story-container" >    
+			   </div>
+	</div><!--nodeSubListTemplate end--> 
+	<div id="nodeSubListItemTemplate" class="col-md-4 text-center" style=" border:2px solid #ffffff;">
+					    	  <a href="#" id="noedSubShow">
+					      		<p class="story-con-p" id='noedSubContent'>
+					subNodeItem
+					      		</p>
+					        </a>
+	</div> <!--nodeSubListItemTemplate end-->
+					      
+<div class="view-line"></div>
 
-      <%= form_for :node, url: {action: "rate"}, remote: true, html: {id: "rate_story_node_#{@node.id}" } do |f| %>
-          <%= f.button id: "btn-rate", class: "btn btn-default" do %>
-            <span class="glyphicon glyphicon-thumbs-up" style="vertical-align: middle"></span> rate
-          <% end %>
-      <% end %>
-
-    </div>
-    <div id="nav">
-      <% if prev?(@node) %>
-        <%= link_to 'Prev', story_node_path(@story, to_prev(@node)) %>
-      <% else %>
-        <span style="color:#e6e6e6">Prev</span>
-      <% end %>
-
+   <div id="nav" class="row-fluid text-center">
+      
       <%= link_to 'Back', story_path(@story) %>
 
       <% if next?(@node) %>
-        <%= link_to 'Next', story_node_path(@story, to_next(@node)) %>
-      <% else %>
+      	<input id="nodeid" type="hidden" value="<%=@node.id%>">
+      	<span id='nextNodesSpan'><a href="#" id="nextNodes">Next</a></span>
+       <% else %>
         <span style="color:#e6e6e6">Next</span>
       <% end %>
     </div>
-    <div id="op-write">
-      <a href="#" id="new-story-node">Continue the story</a>
-    </div>
-  </div>
-<div class="view-line"></div>
 </div>
 <!--container-->
+
+
 
 <script type="text/javascript">
   
   $(function(){
-
+		$("#storyNodeTemplate").hide();
+		$("#nodeSubListTemplate").hide();
+		$("#nodeSubListItemTemplate").hide();
+		
+		//click nextNodes 
+		$("#nextNodes").click(function(e){
+	 		  	
+	 		   
+	 		  	if("color:#e6e6e6"==$("#nextNodesSpan").attr('style')){
+	 		  	  return false;
+	 		  	}
+	 		  	var nodeid=$("#nodeid").attr('value');
+	 		  	//alert(nodeid);
+	 		  	//alert('/stories/<%=@node.story.id%>/nodes/'+nodeid); subordinates
+	 		  	var options = {
+            url: '/stories/<%=@node.story.id%>/nodes/'+nodeid+'/subordinates',
+            method: "get",
+            dataType: "json",
+            data: {},
+            success: function(data) {
+               var list = $("#nodeSubListTemplate").clone(); 
+	 		  	     var level='';
+	 		  	 		 for(var i=0;i<data.length;i++){
+                 var item=data[i];
+                 level=item.level;
+               
+                
+                 addnodeSubListItem(list ,item.id,item.level, item.user_id,item.content)	;
+               }
+               list.find("#nodeSubChapter").html("Chapter "+level);
+               list.appendTo($("#storyNode"));
+							 list.slideDown('slow')
+               return true;
+            },
+            error: function(data){
+              //alert(data.status);
+               return false;
+            }};
+    			$.ajax(options);    
+					 // $("#nextNodesSpan").html('Next'); 
+					  $("#nextNodesSpan").attr('style',"color:#e6e6e6");
+					  
+ 	 		  	
+	 		  	;
+		  return false;
+		});
+	
     // rate click
     $("#btn-rate").click(function(e){
 
@@ -72,7 +135,199 @@
       return true;
 
     });
-  })
+    
+     
+   ;
+     <%
+    	@nodeTmp=@node
+    	@i=0
+      while @i<@node.level
+	    %> 
+	    // alert(<%=@nodeTmp.id %>);
+	       
+	     
+	      var row = $("#storyNodeTemplate").clone(); 
+	      row.attr('id',"storyNodeTemplate_<%=@nodeTmp.id%>");
+	      row.find("#nodeChapter").html("Chapter <%= @nodeTmp.level %><small>(Author: <%= @nodeTmp.user.username %>)</small>"); 
+	      var content="<%= @nodeTmp.content.gsub(/\n/, '</br>') %>";
+	    
+	      row.find("#noedContent").html(content);
+	      
+	      var rate=row.find("#rate_story_node_");
+	      rate.attr('id','rate_story_node_<%=@nodeTmp.id%>');
+	      rate.attr('action','/stories/<%=@nodeTmp.story.id%>/nodes/<%=@nodeTmp.id%>/rate');
+	       
+	      var btnRate=row.find("#btn-rate");
+	      btnRate.attr('id','btn-rate_<%=@nodeTmp.id%>');
+	      btnRate.click(function(){
+				 // alert(<%=@nodeTmp.id%>);
+				 
+		      var form_id = "#rate_story_node_<%=@nodeTmp.id%>"
+		      var options = {
+		          dataType: "json",
+		          success: function(data) {
+		            popup("+1", $("#btn-rate_<%=@nodeTmp.id%>"));
+		          }
+		      };
+		
+		      $(form_id).ajaxForm(options).submit();
+		
+		      return true;
+				 
+				  }); 
+				  
+				var newStoryNode=row.find("#new-story-node");
+	      newStoryNode.attr('id','new-story-node_<%=@nodeTmp.id%>'); 
+		    newStoryNode.click(function(){
+		      $("#form-new-story-node").attr('action','<%=@nodeTmp.id%>/follow_up');
+      	  $("#modal-new-story-node").modal("show");
+      	   var content="<%= @nodeTmp.content.gsub(/\n/, '</br>') %>";
+      	   
+      	  $("#node_content").attr('placeholder',content);
+      	     
+      	 
+      	  $("#placeholder").text(content);
+      	  
+      	   return false;
+		    });
+	   
+	      row.prependTo($("#storyNode"));
+				
+					row.slideDown('slow');
+					//row.slideToggle();
+				//	row.show();
+	    <%
+	       @i=@i+1
+	       @nodeTmp=@nodeTmp.parent
+    end
+ 
+     %> 
+     })
+     // showNextNode 
+     function showNextNode(list,nodeid,level,authorid,content){
+     		list.remove();
 
-
+     	  var row = $("#storyNodeTemplate").clone(); 
+	      row.attr('id',"storyNodeTemplate_"+nodeid);
+	     
+	      
+	      var optionsuser = {
+					        		url: '/users/'+authorid,
+								      method: "get",
+								      dataType: "json",
+								      data: {},
+								      success: function(data) {
+								       row.find("#nodeChapter").html("Chapter "+level+"<small>(Author: "+data.username+")</small>"); 
+								     		 
+								      },
+								      error: function(data){
+								       alert(data[error]);
+								      for(var i in data){
+								        // alert(i);
+								        }
+								               return false;
+								            }
+					        }; 
+       $.ajax(optionsuser); 
+       					
+	      
+	      row.find("#noedContent").text(content);
+	      $("#nodeid").attr('value',nodeid);
+	      
+	      //rate
+	      var rate=row.find("#rate_story_node_");
+	      rate.attr('id','rate_story_node_'+nodeid);
+	      rate.attr('action','/stories/<%=@node.story.id%>/nodes/'+nodeid+'/rate');
+	       
+	      var btnRate=row.find("#btn-rate");
+	      btnRate.attr('id','btn-rate_'+nodeid);
+	      btnRate.click(function(){
+			 
+				 
+		      var form_id = "#rate_story_node_"+nodeid;
+		      var options = {
+		          dataType: "json",
+		          success: function(data) {
+		            popup("+1", $("#btn-rate_"+nodeid));
+		          }
+		      };
+		
+		      $(form_id).ajaxForm(options).submit();
+		
+		      return true;
+				 
+				  }); 
+	      // end rate
+	      //new-story-node
+	      
+	      	var newStoryNode=row.find("#new-story-node");
+	     	  newStoryNode.attr('id','new-story-node_'+nodeid); 
+		    	newStoryNode.click(function(){
+		      $("#form-new-story-node").attr('action',nodeid+'/follow_up');
+      	  $("#modal-new-story-node").modal("show");
+      	  $("#node_content").attr('placeholder',content);
+      	     
+      	 
+      	  $("#placeholder").text(content);
+      	  
+      	   return false;
+		    });						
+	      // new-story-node end
+	      
+	      var options = {
+            url: '/stories/<%=@node.story.id%>/nodes/'+nodeid+'/subordinates',
+            method: "get",
+            dataType: "json",
+            data: {},
+            success: function(data) {
+              // console.log("can register");
+                if(data.length >0){
+                	var nodeid=$("#nodeid").attr('value',nodeid);
+                	//$("#nextNodesSpan").html('<a href="#" id="nextNodes">Next</a>');
+                	$("#nextNodesSpan").attr('style',"");
+                }else{
+                //  $("#nextNodesSpan").html('Next');
+                	
+                	$("#nextNodesSpan").attr('style',"color:#e6e6e6");
+                }
+               return true;
+            },
+            error: function(data){
+              //alert(data.status);
+               return false;
+            }};
+    			$.ajax(options);  
+    			
+    			
+	      row.appendTo($("#storyNode"));
+				
+				row.slideDown('slow');
+     }
+   // showNextNode  end
+   
+   // addnodeSubListItem 
+  		function addnodeSubListItem(list ,nodeid,level, authorid,content){
+  			var item=$("#nodeSubListItemTemplate").clone(); 
+				item.attr('id','nodeSubListItemTemplate'+nodeid);
+				item.find("#noedSubContent").html(content); 
+							
+				item.find("#noedSubShow").click(function(){
+						list.animate({
+								left:'0px',
+								opacity:'0',
+								height:'0px',
+							  width:'0px'			     
+								} ,
+						 		'slow' 
+						 	  ,showNextNode(list,nodeid,level ,authorid,content)
+						);
+					return false;
+				 });
+							
+	 		  item.show();
+	 		  item.appendTo(list);
+  		}
+  		//addnodeSubListItem end
+  		
+     	 
 </script>

@@ -1,5 +1,5 @@
 class NodesController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show, :rate]
+ # before_action :authenticate_user!, except: [:index, :show, :rate]
   before_action :set_node, only: [:show, :edit, :update, :destroy]
 
   # GET /nodes
@@ -15,7 +15,10 @@ class NodesController < ApplicationController
 
     @story = Story.find(params[:story_id])
     @node  = Node.find(params[:id])
-
+    
+    
+     
+    
     # TODO
     # 1. add reading action
     @user_action = UserAction.record_action(@story, @node, current_user, 2)
@@ -26,11 +29,23 @@ class NodesController < ApplicationController
     # no matter or what, show the story
     respond_to do |format|
         format.html { @node }
-        format.json { render action: 'show', location: @node}
+       # format.json { render action: 'show', location: @node}
+        format.json { render json: @node, status: :ok}
     end
 
   end
+  
+  def subordinates
+    @node  = Node.find(params[:id])
 
+    # no matter or what, show the story
+    respond_to do |format|
+        format.html { @node }
+       # format.json { render action: 'show', location: @node}
+        format.json { render json: @node.subordinates, status: :ok}
+    end
+
+  end
   # GET /nodes/new
   def new
     @story = Story.find(params[:story_id])
@@ -54,7 +69,7 @@ class NodesController < ApplicationController
 
     respond_to do |format|
         format.html { head :ok }
-        format.json { render json: @node, status: :ok}
+        format.json { render json: @node.subordinates, status: :ok}
     end
 
   end
@@ -62,15 +77,18 @@ class NodesController < ApplicationController
   # POST /nodes
   # POST /nodes.json
   def create
-
+#console.log("-------------");
     @node           = Node.new(node_params)
     @story          = Story.find(params[:story_id])
     @node.story     = @story
-    @node.user_id   = current_user.id
-
+    if current_user != nil
+    	@node.user_id   = current_user.id
+    else
+    	@node.user_id =0
+		end
     @parent         = Node.where("nodes.story_id = ? AND nodes.level = 1", @story.id).first
     @node.parent    = @parent
-
+     
     respond_to do |format|
       if @node.save
         format.html { redirect_to story_path(@story), notice: 'Your story was successfully created.' }
@@ -99,8 +117,12 @@ class NodesController < ApplicationController
     @node.parent   = @parent
     @node.level    = @parent.level + 1
     @node.path     = "#{@parent.path}, #{@parent.id}"
-    @node.user_id  = current_user.id
-
+    if current_user != nil
+    	@node.user_id  = current_user.id
+		else
+			@node.user_id =0
+		end
+		
     respond_to do |format|
       if @node.save
         format.html { redirect_to story_path(@story), notice: "You just follow up." }
