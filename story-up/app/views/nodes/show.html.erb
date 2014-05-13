@@ -12,17 +12,18 @@
   <div id='storyNodeTemplate'>
 		  <h2 class=" pagination" id='nodeChapter'></h2>
 		  <div class="row story-container">
-		    <div class="col-md-12">
+		    <div class="story-con" >
 		      <p class="story-con-p" id='noedContent'>
 		
 		        
 		         
 		      </p>
 		    </div>
+
 		  </div>
 		  <div id="node-content" class="row-fluid text-center">
 		    
-		    <div id="op-rate">
+		    <div id="op-rate" >
 		
 		      <%= form_for :node, url: {action: "rate"}, remote: true, html: {id: "rate_story_node_" } do |f| %>
 		          <%= f.button id: "btn-rate", class: "btn btn-default" do %>
@@ -37,17 +38,21 @@
 		    </div>
     </div> <!--storyNode end -->
   </div>
-  <div  class="container-fluid" id='nodeSubListTemplate' >
+  <div  id='nodeSubListTemplate' >
  					<h2 class=" pagination" id='nodeSubChapter'></h2>
- 					<div class="row story-container" >    
+ 					<div   id="nodeSubItemTemplate"   >    
 			   </div>
 	</div><!--nodeSubListTemplate end--> 
-	<div id="nodeSubListItemTemplate" class="col-md-4 text-center" style=" border:2px solid #ffffff;">
+	<div id="nodeSubListItemTemplate"  class="owl-item" style="width:400px">
+		<div class="owl-demo"      > 
+			<div class="item"  style="width:400px">
 					    	  <a href="#" id="noedSubShow">
 					      		<p class="story-con-p" id='noedSubContent'>
 					subNodeItem
 					      		</p>
 					        </a>
+			</div>
+			</div>
 	</div> <!--nodeSubListItemTemplate end-->
 					      
 <div class="view-line"></div>
@@ -92,6 +97,7 @@
             data: {},
             success: function(data) {
                var list = $("#nodeSubListTemplate").clone(); 
+             
 	 		  	     var level='';
 	 		  	 		 for(var i=0;i<data.length;i++){
                  var item=data[i];
@@ -309,7 +315,7 @@
   		function addnodeSubListItem(list ,nodeid,level, authorid,content){
   			var item=$("#nodeSubListItemTemplate").clone(); 
 				item.attr('id','nodeSubListItemTemplate'+nodeid);
-				item.find("#noedSubContent").html(content); 
+				item.find("#noedSubContent").html(content.substring(0,50)); 
 							
 				item.find("#noedSubShow").click(function(){
 						list.animate({
@@ -325,7 +331,7 @@
 				 });
 							
 	 		  item.show();
-	 		  item.appendTo(list);
+	 		  item.appendTo(list.find("#nodeSubItemTemplate"));
   		}
   		//addnodeSubListItem end
   		

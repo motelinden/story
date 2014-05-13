@@ -162,38 +162,7 @@ $(function(){
       }
   });
 
-  $("#form-new-story-node").validate({
-        rules: {
-                "node[content]": {
-                    required: true,
-                    maxlength: 500,
-                    minlength: 50
-                },
-        },
-
-        highlight: function(element) {
-            $(element).closest(".form-group").addClass('has-error');
-        },
-        unhighlight: function(element) {
-            $(element).closest('.form-group').removeClass('has-error');
-        },
-
-        errorElement: 'span',
-        errorClass: 'help-block',
-        errorPlacement: function(error, element) {
-            if(element.parent('.input-group').length) {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element.parent());
-            }
-        },
-
-        submitHandler: function(form) {
-           form.submit();
-           // hide modal
-           $("#modal-new-story-node").modal("hide");
-        }
-  });
+  
 
 
 
@@ -224,11 +193,17 @@ $(function(){
       },
 
       submitHandler: function(form) {
-        $("#modal-new-story").modal("hide");
-        form.submit();
-      }
+       // $("#modal-new-story").modal("hide");
+        $("#modal-new-story").slideUp('slow');
+        // todo  Be deeply grateful word filter
+
+         form.submit();
+  	 
+				 
+      } 
   });
 })
+ 
 </script>
 
 </html>

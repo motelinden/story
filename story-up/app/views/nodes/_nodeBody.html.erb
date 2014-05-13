@@ -1,0 +1,275 @@
+
+<div id="storyDiv" class="container-fluid">
+		
+		 <h1 class="pager"><p id="storyTitle">Story  </p></h1>
+ 		  <div class="view-line"></div>  
+		 <div id="nodeList">
+		 
+		 </div>
+		
+		
+		 
+
+</div>
+<div id="nodeTemplate">
+  
+		<div id="nodeChapter">
+			   <button type="button" class="close" onclick="" id="closeStory" >&times;</button>
+			   <h4 id="chapter">First Chapter</h4>
+			    
+		</div>
+		<!--nodeChapter end-->
+		<div id="contentDiv">
+					<p class="" id='content'></p>
+
+		</div>
+		<!--contentDiv end-->
+		<div class="row-fluid text-center" id="bottomDiv">
+		   <div class="row-fluid text-left">
+		      <form accept-charset="UTF-8" action="" data-remote="true" id="rate_story_node_" method="post">
+ 		          <button class="btn btn-default" id="btn-rate_" name="button" type="submit">
+		            <span class="glyphicon glyphicon-thumbs-up" style="vertical-align: middle"></span> rate
+							</button>
+							
+					</form>
+		   </div>
+		   <div class="row-fluid text-center">
+		      <span id="backSpan" ><a href="#"  id="back" onclick="return false;">Back</a></span>
+					<span id="nextNodesSpan" ><a href="#" id="nextNodes" >Next</a></span>
+		   </div>
+       <div   class="row-fluid text-right">
+					<span id="newNodesSpan" style=""><a href="#" id="newNode">Continue the story</a></span>
+		   </div>
+		   
+
+		</div>
+		<!--bottomDiv end-->
+		 <div class="view-line"></div>  
+</div>
+  <div  id='nodeSubListTemplate' class="owl-demo owl-carousel" >
+  			   <button type="button" class="close" onclick="" id="closeNodeSubList" >&times;</button>
+ 					<h4 class=" pagination" id='nodeSubChapter' ></h4>
+ 				   
+	 							<div id="nodeSubItemTemplate"  >
+								     
+								</div>
+					 
+	</div><!--nodeSubListTemplate end--> 
+<div id="nodeSubListItemTemplate"  class="item" style="width:400px" >
+ 					    	  <a href="#" id="noedSubShow">
+					      		<p class="story-con-p" id='noedSubContent'>
+					subNodeItem
+					      		</p>
+					        </a>
+</div> <!--nodeSubListItemTemplate end-->
+<div id="hideNewNodeDiv">
+  <%= render "nodes/newNode" %>
+</div>
+<script type="text/javascript">
+	 $("#storyDiv").hide();
+   $("#nodeTemplate").hide();
+   $("#nodeSubListTemplate").hide();
+	 $("#nodeSubListItemTemplate").hide();
+	 $("#newNodeDiv").hide();
+   $(function() {
+   
+   			
+   });
+   
+   		
+			//click nextNodes 
+		function nextNodes(storyId,nodeId,level){
+	 		  // alert("ck nextNodes  nodeId:"+nodeId+" level:"+level+" storyId:"+storyId);
+	 		  var tmp = $("#nodeSubListTemplate_"+nodeId);
+	 		  if(("nodeSubListTemplate_"+nodeId)==tmp.attr("id")){
+	 		  	return false;
+	 		  }
+	 		  
+	 		  
+	 		   var nodesOptions = {
+            url:'/stories/'+storyId+'/nodes/'+nodeId+'/subordinates',
+            method: "get",
+            dataType: "json",
+            data: {},
+            success: function(data) {
+            // alert("ck nextNodes data.length:"+data.length+" nodeId:"+nodeId+" level:"+level);
+            	if(data.length==0){
+			 		  	  return false;
+			 		  	}else{
+			 		  	     for(var i=0;i<data.length;i++){
+		                 var item=data[i];
+		                 tmp = $("#nodeTemplate_"+item.id);
+								 		 if(("nodeTemplate_"+item.id)==tmp.attr("id")){
+								 		  	return false;
+								 		  }
+		                 
+		               }
+			 		  			 var list = $("#nodeSubListTemplate").clone(); 
+			 		  			 list.attr('id',"nodeSubListTemplate_"+nodeId);
+			 		  	     list.find("#nodeSubChapter").html("Chapter "+level);
+			 		  	    
+			 		  	 		 for(var i=0;i<data.length;i++){
+		                 var item=data[i];
+		                 addnodeSubListItem(list ,item.story_id,item.id,item.level, item.user_id,item.content,nodeId)	;
+		               }
+			           
+			            list.appendTo($("#nodeList"));
+									list.slideDown('slow')
+									var owl = list.find("#nodeSubItemTemplate");
+									initCarousel(owl, "", "");
+									owl.trigger('owl.play',2000);
+					 		 
+			 		  	}
+            	 
+            },
+            error: function(data){
+               alert("err");
+               return false;
+            }
+           };
+    		 	$.ajax(nodesOptions); 
+            
+	 		  	
+	 		  	return false;
+	 	};
+
+ 	 	function addnodeSubListItem(list,storyId ,nodeid,level, authorid,content,pNodeId){
+	 			
+	 			 
+	 		//	alert("addnodeSubListItem");
+	 			 
+	 			//alert("addnodeSubListItem");
+	 			var item=$("#nodeSubListItemTemplate").clone(); 
+				item.attr('id','nodeSubListItemTemplate'+nodeid);
+				item.find("#noedSubContent").html(content.substring(0,50)); 
+							
+				item.find("#noedSubShow").click(function(){
+						list.animate({
+								left:'0px',
+								opacity:'0',
+								height:'0px',
+							  width:'0px'			     
+								} ,
+						 		'slow' 
+						 	 
+						);
+						return showNode(list,storyId,nodeid,level ,authorid,content,pNodeId);
+					//return false;
+				 });
+							
+	 		  item.show();
+	 		  item.appendTo(list.find("#nodeSubItemTemplate"));
+	 	
+	 	}
+       // showNode 
+     function showNode(list,storyId,nodeid,level,authorId,content,pNodeId){
+     	//	list.remove();
+ 				
+ 			
+    	var node= $("#nodeTemplate").clone();
+      node.attr('id','nodeTemplate_'+nodeid);     
+      var user = $.ajax({
+									  url: "users/"+authorId,
+									  async: false,
+									  method: "get",
+            				dataType: "json"
+									}).responseText;
+							
+							var userJson = JSON.parse(user); 	
+      node.find("#chapter").html("Chapter "+level+"<small>(Author: "+userJson.username+")</small>"); 
+      node.find("#content").html( content);        
+      
+      var close = node.find("#closeStory");
+      close.attr('id','closeNode_'+nodeid);     
+      close.click(function(){
+              return closeNode(node,storyId,pNodeId,level);
+               		   
+       });
+       //nextNodes
+             
+      node.find("#nextNodes").click(function(){
+              return nextNodes(storyId,nodeid,level+1);
+               		   
+       });
+       //nextNodes end
+       // new newNode
+        
+       node.find("#newNode").click(function(){
+              return showNewNode(storyId,nodeid);
+               		   
+       });
+       //newNode end
+      	//rate
+	      var rate=node.find("#rate_story_node_");
+	      rate.attr('id','rate_story_node_'+nodeid);
+	      rate.attr('action','/stories/'+storyId+'/nodes/'+nodeid+'/rate');
+	       
+	      var btnRate=node.find("#btn-rate_");
+	      btnRate.attr('id','btn-rate_'+nodeid);
+	      btnRate.click(function(){
+			 
+				 
+		      var form_id = "#rate_story_node_"+nodeid;
+		      var options = {
+		          dataType: "json",
+		          success: function(data) {
+		            popup("+1", $("#btn-rate_"+nodeid));
+		          }
+		      };
+		
+		      $(form_id).ajaxForm(options).submit();
+		
+		      return true;
+				 
+				  }); 
+	      // end rate       
+      node.appendTo($("#nodeList"));
+      node.show();
+      node.slideDown("slow");
+     // alert(nodeid);
+    
+  		$("#nodeSubListTemplate_"+pNodeId).remove();
+       
+       
+        
+    	return false;
+     }
+   // showNode  end
+	
+		function closeNode (node,storyId,nodeid,level){
+			//alert("closeNode storyId:"+storyId+"	nodeid:"+nodeid+" level:"+level);
+		
+			
+			var nodeDiv= $("#newNodeDiv");
+			 
+			nodeDiv.hide();
+			//nodeDiv.prependTo($("hideNewNodeDiv"));
+			nodeDiv.appendTo($("#hideNewNodeDiv"));
+			var nextall=node.nextAll();
+			//alert(nextall.length);
+			if(nextall.length>0){
+				for(var r=0;r< nextall.length;r++){
+					  nextall[r].remove();
+				}
+			}
+			node.slideUp("slow");
+			node.remove();
+			return nextNodes(storyId,nodeid,level);
+			//return false;
+		}
+		
+		function showNewNode(storyId,nodeId){
+		 
+    	var node= $("#newNodeDiv");
+    	//var node= $("#newNodeDiv").clone();
+    	node.attr("newNodeDiv_"+nodeId);
+    	var from =node.find("#form-new-story-node");
+    	from.attr("action","/stories/"+storyId+"/nodes/"+nodeId+"/follow_up")
+    	 //alert(from.attr("action"));
+    	//stories/2/nodes/52/follow_up
+    	node.appendTo($("#nodeTemplate_"+nodeId));
+			//node.slideDown('slow');
+			node.show();
+		 return false;
+		}
+</script>

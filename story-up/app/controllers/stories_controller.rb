@@ -1,5 +1,5 @@
 class StoriesController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
+ # before_action :authenticate_user!, except: [:index, :show]
   before_action :set_story, only: [:show, :edit, :update, :destroy]
 
   # GET /stories
@@ -22,7 +22,8 @@ class StoriesController < ApplicationController
     # no matter or what, show the story
     respond_to do |format|
         format.html { @story }
-        format.json { render action: 'show', location: @story}
+        #format.json { render action: 'show', location: @story}
+        format.json { render json: @story, status: :ok}
     end
 
   end
@@ -54,20 +55,28 @@ class StoriesController < ApplicationController
   # POST /stories
   # POST /stories.json
   def create
-
+printf '--------------'
     @story = Story.new(story_params)
 
     if user_signed_in?
       @story.user = current_user
     end
-
     respond_to do |format|
       if @story.save
         @node  = Node.create(story: @story, content: @story.story_content, level: 1, user: current_user)
         @node.update_attributes(path: @node.id)
-        format.html { redirect_to @story, notice: 'Story was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @story }
-      else
+        @storys=Story.all
+       
+         
+     		#format.html { redirect_to @story, notice: 'Story was successfully created.' }
+        #format.json { render action: 'show', status: :created, location: @story }
+        p '++++++++++++++++++++++'
+        
+      	format.html { redirect_to '', notice: 'Story was successfully created.' }
+      	 
+        format.json { render json: @storys, status: :ok}
+        p '++++++++++++++++++++++'
+       else
         format.html { render action: 'new' }
         format.json { render json: @story.errors, status: :unprocessable_entity }
       end
@@ -101,6 +110,7 @@ class StoriesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_story
+    
       @story = Story.find(params[:id])
     end
 

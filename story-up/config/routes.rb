@@ -25,6 +25,7 @@ StoryUp::Application.routes.draw do
           get  ':id/new_follow' => "nodes#new_follow"
           post ':id/follow_up'  => "nodes#follow_up"
           get  ':id/subordinates'  => "nodes#subordinates"
+          get  '/nodeFirstByStryId'  => "nodes#nodeFirstByStryId"
         end
       end
   end

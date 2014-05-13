@@ -3,9 +3,9 @@
   <%= render "nav" %>
   <%= render "users/registrations/modal" %>
   <%= render "users/sessions/modal" %>
-  <%= render "stories/modal" %>
+  
 
-  <div class="container-fluid">
+  <div class="container-fluid" id='storyIndex'>
 
       <h1 class="pager page-header"><p>There are <%= @stories.count %> stories...</p></h1>
 
@@ -17,11 +17,13 @@
           <div id="owl-demo" class="owl-demo owl-carousel">
             	<% @stories.each do |story| %>
     	          <div class="item">
-                    <%= link_to story_path(story) do %>
+                     
+                    <a href="#" onclick="showStory('<%=story.id%>');return false;">
         	            <p id="item-p-<%= story.id %>">     
                         <%= short_text(50, story.story_content) %>
                       </p>
-                    <% end %>
+                      </a>
+                   
                 </div>
               <% end %>
           </div>
@@ -37,27 +39,39 @@
       </div><!--row fluid-->
       
       <div class="add-stories">
-        <p><a href="#" id="new-story">Start a new story</a></p>
+        <p><a href="#" id="newStory">Start a new story</a></p>
       </div>
-      <div class="page-header"></div>
-
+     <div class="page-header"></div>
+ 			
+ 		 <%= render "stories/modal" %>
+		 
+			
     </div><!--container--> 
-
-  <%= render "bottom" %>
+   <%= render "nodes/nodeBody" %>
+  
+ 
   
 </div>
 <!--demo end--> 
 
 <script>
-    $(function() {
 
+   $(function() {
+			$("#newStory").click(function(e){ 
+				
+				$("#modal-new-story").slideDown('slow');
+					 
+				 return false;
+			});
+			 
+			 
       var owl = $("#owl-demo");
       /*var next_id = "#next";
       var prev_id ="#prev";*/
 
       initCarousel(owl, "", "");
 
-      owl.trigger('owl.play',2000);
+     owl.trigger('owl.play',2000);
 
       //size item
       /*var width = $(".owl-item .item").css("width");
@@ -74,6 +88,9 @@
         $(".left-arrow").hide();
         $(".right-arrow").hide();
       });*/
+      
+      //stor
+      $("#story").hide();
     });
 
     /*    
@@ -82,5 +99,112 @@
       $(".owl-item").css("width","auto");
 
     }, false);*/
+		
+	 //             
+	 
+	 
 
+		function closeStoryIndex(){
+			  $("#storyIndex").slideUp("slow");
+			  
+		
+		}
+		function openStoryIndex(){
+			  $("#storyIndex").slideDown("slow");
+		
+		}
+		
+	function showStory(story_id){
+		 
+					var options = {
+            url: "/stories/"+story_id+"/nodes/nodeFirstByStryId",
+            method: "get",
+            dataType: "json",
+            data: {},
+            success: function(dataNode) {
+               var storyDiv = $("#storyDiv"); 
+             	 
+               storyDiv.find("#storyTitle").html("Story "+story_id);
+               var node= $("#nodeTemplate").clone();
+               
+               node.attr('id',"nodeTemplate_"+dataNode.id);
+               var closeStory=node.find("#closeStory").click(function(){
+               		$("#storyDiv").slideUp("slow");
+               		$("#nodeList").html("");
+               		openStoryIndex();
+               		
+               });
+               
+               var user = $.ajax({
+									  url: "users/"+dataNode.user_id,
+									  async: false,
+									  method: "get",
+            				dataType: "json"
+									}).responseText;
+							
+							var userJson = JSON.parse(user); 		
+              node.find("#chapter").html("Chapter "+dataNode.level+"<small>(Author: "+userJson.username+")</small>"); 
+              node.find("#content").html(dataNode.content); 
+               // new newNode
+        
+				      node.find("#newNode").click(function(){
+				            return showNewNode(story_id,dataNode.id);
+				               		   
+				      });
+				       //newNode end
+              
+              //rate
+				      var rate=node.find("#rate_story_node_");
+				      rate.attr('id','rate_story_node_'+dataNode.id);
+				      rate.attr('action','/stories/'+story_id+'/nodes/'+dataNode.id+'/rate');
+				       
+				      var btnRate=node.find("#btn-rate_");
+				      btnRate.attr('id','btn-rate_'+dataNode.id);
+				      btnRate.click(function(){
+						 
+							 
+					      var form_id = "#rate_story_node_"+dataNode.id;
+					      var options = {
+					          dataType: "json",
+					          success: function(data) {
+					            popup("+1", $("#btn-rate_"+dataNode.id));
+					          }
+					      };
+					
+					      $(form_id).ajaxForm(options).submit();
+					
+					      return true;
+							 
+							  }); 
+				      // end rate 
+              //back
+              if(dataNode.level==1){
+              	node.find("#backSpan").remove();
+              }else{
+              	node.find("#back").click(function(){
+               		 //todo 
+               });
+              }
+              //nextNodes
+             
+              node.find("#nextNodes").click(function(){
+               		return nextNodes(story_id,dataNode.id,dataNode.level+1);
+               		   
+               });
+                 
+               
+               
+              node.appendTo($("#nodeList"));
+              node.show();
+             	closeStoryIndex();
+            	$("#storyDiv").slideDown("slow");
+              //  return true;
+            },
+            error: function(data){
+               alert("showNode err");
+               return false;
+            }};
+    			$.ajax(options); 
+		}
+ 
 </script>

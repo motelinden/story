@@ -1,5 +1,5 @@
 class NodesController < ApplicationController
- # before_action :authenticate_user!, except: [:index, :show, :rate]
+  before_action :authenticate_user!, except: [:index, :show, :rate]
   before_action :set_node, only: [:show, :edit, :update, :destroy]
 
   # GET /nodes
@@ -35,6 +35,15 @@ class NodesController < ApplicationController
 
   end
   
+  def nodeFirstByStryId
+   		@node  =Node.where("nodes.story_id = ? AND nodes.level = 1", params[:story_id]).first
+  	  #@node  = Node.find(params[:story_id])
+  		 respond_to do |format|
+  		 	format.html { @node }
+        format.json { render json: @node, status: :ok}
+   		 end
+	end
+   # GET /nodes/1.json
   def subordinates
     @node  = Node.find(params[:id])
 
@@ -125,9 +134,13 @@ class NodesController < ApplicationController
 		
     respond_to do |format|
       if @node.save
+      
         format.html { redirect_to story_path(@story), notice: "You just follow up." }
-        format.json { render action: "show", status: :created, location: story_nodes_path(@story)}
+      # format.json { render "success"}
+        format.json { render json: @parent, status: :ok}
+       
       else
+     
         format.html { render action: 'new_follow'}
         format.json { render json: @node.errors, status: :unprocessable_entity}
       end
