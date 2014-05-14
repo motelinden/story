@@ -13,13 +13,10 @@ class StoriesController < ApplicationController
   def show
     @story = Story.find(params[:id])
     # TODO
-    # 1. get relative node
-    @node = Node.where("nodes.story_id = ? AND nodes.level = 1", @story.id).first
-    p "#{@node}"
-    # 2. add reading action
-    @user_action = UserAction.record_action(@story, @node, current_user, 2)
+    # 1. add reading action
+    @user_action = UserAction.record_action(@story, nil, current_user, 2)
 
-    # 3. add or update reading activity statistics
+    # 2. add or update reading activity statistics
     Statistic.create_or_update_story_statistic(@story, @user_action)
 
     # no matter or what, show the story

@@ -42,9 +42,7 @@ class Statistic < ActiveRecord::Base
 	    	@statistic.update(reading: @statistic.reading + 1, rating: @statistic.rating + 1)
 	    elsif action.action_type == 2
 	    	@statistic.update(reading: @statistic.reading + 1)
-	    elsif action.action_type == 4
-	    	@statistic.update(reading: @statistic.reading + 1, comments: @statistic.comments + 1)
-	    else
+	    else 
 	    	@statistic.update(reading: @statistic.reading + 1, follows: @statistic.follows + 1)
 	    end
 	end

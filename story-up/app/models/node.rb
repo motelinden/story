@@ -2,8 +2,6 @@ class Node < ActiveRecord::Base
 	belongs_to :story
 	belongs_to :user
 	has_one    :statistic
-	has_many   :user_actions
-	has_many   :comments
 
 	has_many :subordinates, class_name: "Node",
 							foreign_key: "parent_id"
@@ -12,5 +10,4 @@ class Node < ActiveRecord::Base
 	# rating  0
 	# reading 2
 	# follows 3
-	# comment 4
 end

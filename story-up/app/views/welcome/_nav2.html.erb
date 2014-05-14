@@ -9,9 +9,8 @@
 
   		<span>Hello: <%= current_user.username %></span>
       	<%= link_to "My Stories", {controller: "users", action: "stories", id: current_user}, class: "inset" %>
-        <%= link_to "My Readings", {controller: "users", action: "readings", id: current_user}, class: "inset" %>
-  		  <%= link_to "Sign out", destroy_user_session_path, method: :delete, data: { confirm: 'Are you sure to sign out?' } %>
-  		  <%= link_to "Home", root_path, class: "inset" %>
+  		<%= link_to "Sign out", destroy_user_session_path, method: :delete, data: { confirm: 'Are you sure to sign out?' } %>
+  		<%= link_to "Home", root_path, class: "inset" %>
   	  	
 	<% end %>
 

@@ -103,7 +103,7 @@ class NodesController < ApplicationController
 
     # TODO follows statistics
     # 1. add follows action
-    @user_action = UserAction.record_action(@story, @parent, current_user, 3)
+    @user_action = UserAction.record_action(@parent, nil, current_user, 3)
 
     # 2. add or update reading activity statistics
     Statistic.create_or_update_story_statistic(@story, @user_action)
