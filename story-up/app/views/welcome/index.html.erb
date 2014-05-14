@@ -16,14 +16,26 @@
         <div class="col-md-12 owl-content">
           <div id="owl-demo" class="owl-demo owl-carousel">
             	<% @stories.each do |story| %>
+            		<div>
     	          <div class="item">
-                     
+                   
                     <a href="#" onclick="showStory('<%=story.id%>');return false;">
         	            <p id="item-p-<%= story.id %>">     
                         <%= short_text(50, story.story_content) %>
                       </p>
                       </a>
-                   
+                	 
+                 
+                </div>
+                 
+                <div class="pager page">
+                				
+                			<h4 >
+                				<%if(story.user!=nil) %>
+                			 			<%=  story.user.username %> 
+                			  <% end %>
+                			 </h4>
+                </div>
                 </div>
               <% end %>
           </div>
@@ -48,7 +60,7 @@
 			
     </div><!--container--> 
    <%= render "nodes/nodeBody" %>
-  
+   <%= render "comments/commentsList" %>
  
   
 </div>
@@ -135,16 +147,23 @@
                		
                });
                
-               var user = $.ajax({
-									  url: "users/"+dataNode.user_id,
-									  async: false,
-									  method: "get",
-            				dataType: "json"
-									}).responseText;
-							
-							var userJson = JSON.parse(user); 		
-              node.find("#chapter").html("Chapter "+dataNode.level+"<small>(Author: "+userJson.username+")</small>"); 
+              	
+              node.find("#chapter").html("Chapter "+dataNode.level+"<small>(Author: "+getUserJson(dataNode.user_id).username+")</small>"); 
               node.find("#content").html(dataNode.content); 
+              var rateCount=node.find("#rateCount");
+               
+						 // rateCount.html("rate("+getRateCount(story_id,dataNode.id)+")");
+						 setRate(rateCount,story_id,dataNode.id);
+						  var commentLink=node.find("#commentLink");
+						 // commentLink.text("comment("+getCommentCount(dataNode.id)+")");
+						  setComment(commentLink,dataNode.id);
+						  
+						 commentLink.click(function(){
+						 			showComments(dataNode.id);
+						 });
+					
+					
+						  
                // new newNode
         
 				      node.find("#newNode").click(function(){
@@ -161,19 +180,24 @@
 				      var btnRate=node.find("#btn-rate_");
 				      btnRate.attr('id','btn-rate_'+dataNode.id);
 				      btnRate.click(function(){
-						 
-							 
-					      var form_id = "#rate_story_node_"+dataNode.id;
-					      var options = {
-					          dataType: "json",
-					          success: function(data) {
-					            popup("+1", $("#btn-rate_"+dataNode.id));
-					          }
-					      };
-					
-					      $(form_id).ajaxForm(options).submit();
-					
-					      return true;
+									var rateOptions = {
+				            url: '/stories/'+story_id+'/nodes/'+dataNode.id+'/rate',
+				            method: "post",
+				            dataType: "json",
+				            data: {},
+				            async: false,
+				            success: function(dataNode) {
+				              popup("+1", $("#btn-rate_"+dataNode.id));
+					            
+									},
+				            error: function(data){
+				               alert("showNode err");
+				               return false;
+				            }};
+				    			$.ajax(rateOptions);
+									 var rateCount=node.find("#rateCount");
+		             	 setRate(rateCount,story_id,dataNode.id);
+					      return false;
 							 
 							  }); 
 				      // end rate 
@@ -206,5 +230,58 @@
             }};
     			$.ajax(options); 
 		}
- 
+ 		
+ 		function getUserJson(userId){
+ 			  var user = $.ajax({
+									  url: "users/"+userId,
+									  async: false,
+									  method: "get",
+            				dataType: "json"
+									}).responseText;
+							
+				return JSON.parse(user); 	
+ 		}
+ 		
+ 		function showComments(nodeId){
+ 			var rateOptions = {
+				            url: 'comments/'+nodeId+'/nodeComments',
+				            method: "get",
+				            dataType: "json",
+				            data: {},
+				            async: false,
+				            success: function(data) {
+				           		  var nodeTemplate=$("#nodeTemplate_"+nodeId);
+				            		//var commentListDiv= $("#commentListDiv"+nodeId);
+				            		var commentListDiv=$(("#commentListDiv_"+nodeId));
+				            	//	alert(commentListDiv.attr("id"));
+				            		if(("commentListDiv"+nodeId)==commentListDiv.attr("id")){
+				            				 commentListDiv.slideDown(); 
+				            		}else{
+				            		 		
+						            	 var list = $("#commentListDiv").clone();
+						            	 list.attr("id","#commentListDiv_"+nodeId);
+		 					             for(var i=0;i<data.length;i++){
+							                 var  item=data[i];
+							                 var commentTemplate=$("#commentTemplate").clone();
+							                 commentTemplate.find("#commentContent").html(item.content);
+							                 commentTemplate.find("#commentUserName").html(item.user_id);
+							                 commentTemplate.appendTo(list.find("#commentList"));
+							                 commentTemplate.show();
+							               }
+							                 
+							             list.find("#closeComment").click(function(){
+							             		list.slideUp(); 
+							             });
+		 					             list.appendTo( nodeTemplate );
+		              				 list.slideDown();
+				            		}
+ 					             
+									},
+				            error: function(data){
+				               alert("showNode err");
+				               return false;
+				            }};
+				    	//		$.ajax(rateOptions);
+ 		}
+ 		
 </script>

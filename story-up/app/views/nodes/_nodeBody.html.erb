@@ -20,27 +20,27 @@
 		</div>
 		<!--nodeChapter end-->
 		<div id="contentDiv">
-					<p class="" id='content'></p>
+					<p class=""  id='content'></p>
 
 		</div>
 		<!--contentDiv end-->
 		<div class="row-fluid text-center" id="bottomDiv">
 		   <div class="row-fluid text-left">
-		      <form accept-charset="UTF-8" action="" data-remote="true" id="rate_story_node_" method="post">
- 		          <button class="btn btn-default" id="btn-rate_" name="button" type="submit">
+  		          <button class="btn btn-default" id="btn-rate_" onclick="return false;" name="button" type="submit">
 		            <span class="glyphicon glyphicon-thumbs-up" style="vertical-align: middle"></span> rate
 							</button>
-							
-					</form>
-		   </div>
+							<h id="rateCount">rate(count)</h>
+							|<h><a  href="#"   onclick="return false;"  id="commentLink">comment(count)</a></h>
+ 		   </div>
+		    
 		   <div class="row-fluid text-center">
-		      <span id="backSpan" ><a href="#"  id="back" onclick="return false;">Back</a></span>
+		      <span id="backSpan" ><a href="#"  id="back" onclick="goTop();return false;">Back</a></span>
 					<span id="nextNodesSpan" ><a href="#" id="nextNodes" >Next</a></span>
 		   </div>
        <div   class="row-fluid text-right">
 					<span id="newNodesSpan" style=""><a href="#" id="newNode">Continue the story</a></span>
 		   </div>
-		   
+		  
 
 		</div>
 		<!--bottomDiv end-->
@@ -55,13 +55,19 @@
 								</div>
 					 
 	</div><!--nodeSubListTemplate end--> 
-<div id="nodeSubListItemTemplate"  class="item" style="width:400px" >
- 					    	  <a href="#" id="noedSubShow">
-					      		<p class="story-con-p" id='noedSubContent'>
-					subNodeItem
-					      		</p>
-					        </a>
-</div> <!--nodeSubListItemTemplate end-->
+<div id="nodeSubListItemTemplate">
+		<div   class="item" style="width:400px" >
+		 					    	  <a href="#" id="noedSubShow">
+							      		<p class="story-con-p" id='noedSubContent'>
+														subNodeItem
+							      		</p>
+							        </a>
+		</div>
+		 <div class="pager page">
+                			<h4 id="noedSubAuthor">Author </h4>
+     </div>
+</div>
+<!--nodeSubListItemTemplate end-->
 <div id="hideNewNodeDiv">
   <%= render "nodes/newNode" %>
 </div>
@@ -137,11 +143,12 @@
 	 			
 	 			 
 	 		//	alert("addnodeSubListItem");
-	 			 
-	 			//alert("addnodeSubListItem");
+ 
 	 			var item=$("#nodeSubListItemTemplate").clone(); 
 				item.attr('id','nodeSubListItemTemplate'+nodeid);
-				item.find("#noedSubContent").html(content.substring(0,50)); 
+				
+				item.find("#noedSubContent").html(short_text(50,content)); 
+				item.find("#noedSubAuthor").html(getUserJson(authorid).username); 
 							
 				item.find("#noedSubShow").click(function(){
 						list.animate({
@@ -168,15 +175,9 @@
  			
     	var node= $("#nodeTemplate").clone();
       node.attr('id','nodeTemplate_'+nodeid);     
-      var user = $.ajax({
-									  url: "users/"+authorId,
-									  async: false,
-									  method: "get",
-            				dataType: "json"
-									}).responseText;
+     
 							
-							var userJson = JSON.parse(user); 	
-      node.find("#chapter").html("Chapter "+level+"<small>(Author: "+userJson.username+")</small>"); 
+      node.find("#chapter").html("Chapter "+level+"<small>(Author: "+getUserJson(authorId).username+")</small>"); 
       node.find("#content").html( content);        
       
       var close = node.find("#closeStory");
@@ -209,19 +210,36 @@
 	      btnRate.click(function(){
 			 
 				 
-		      var form_id = "#rate_story_node_"+nodeid;
-		      var options = {
-		          dataType: "json",
-		          success: function(data) {
-		            popup("+1", $("#btn-rate_"+nodeid));
-		          }
-		      };
+		     
+		     var rateOptions = {
+				            url: '/stories/'+storyId+'/nodes/'+nodeid+'/rate',
+				            method: "post",
+				            dataType: "json",
+				            data: {},
+				            async: false,
+				            success: function(dataNode) {
+				              popup("+1", $("#btn-rate_"+nodeid));
+					            
+									},
+				            error: function(data){
+				               alert("showNode err");
+				               return false;
+				  }};
+				  $.ajax(rateOptions);
+					var rateCount=node.find("#rateCount");
+		      setRate(rateCount,storyId,nodeid);
 		
-		      $(form_id).ajaxForm(options).submit();
-		
-		      return true;
+		      return false;
 				 
 				  }); 
+				 
+				  var rateCount=node.find("#rateCount");
+					//rateCount.html("rate("+getRateCount(storyId,nodeid)+")");
+					setRate(rateCount,storyId,nodeid);
+					var commentLink=node.find("#commentLink");
+					//commentLink.text("comment("+getCommentCount(nodeid)+")");
+					setComment(commentLink,nodeid);
+				  
 	      // end rate       
       node.appendTo($("#nodeList"));
       node.show();
@@ -272,4 +290,63 @@
 			node.show();
 		 return false;
 		}
+		
+		function goTop(acceleration, time) {
+		  acceleration = acceleration || 0.1;
+		  time = time || 16;
+		  var x1 = 0;
+		  var y1 = 0;
+		  var x2 = 0;
+		  var y2 = 0;
+		  var x3 = 0;
+		  var y3 = 0;
+		  if (document.documentElement) {
+		      x1 = document.documentElement.scrollLeft || 0;
+		      y1 = document.documentElement.scrollTop || 0;
+		  }
+		  if (document.body) {
+		      x2 = document.body.scrollLeft || 0;
+		      y2 = document.body.scrollTop || 0;
+		  }
+		  var x3 = window.scrollX || 0;
+		  var y3 = window.scrollY || 0;
+		  var x = Math.max(x1, Math.max(x2, x3));
+		  var y = Math.max(y1, Math.max(y2, y3));
+		  var speed = 1 + acceleration;
+		  window.scrollTo(Math.floor(x / speed), Math.floor(y / speed));
+		  if(x > 0 || y > 0) {
+		      var invokeFunction = "goTop(" + acceleration + ", " + time + ")";
+		      window.setTimeout(invokeFunction, time);
+		  }
+		}
+		
+		function getRateCount(storyId,nodeId){
+		  
+			var count = $.ajax({
+									  url:  '/stories/'+storyId+'/nodes/'+nodeId+'/rateCount',
+									  async: false,
+									  method: "get",
+            				dataType: "json"
+									}).responseText;
+				 
+				return JSON.parse(count); 	
+		}
+		function getCommentCount(nodeId){
+			var user = $.ajax({
+									  url: "comments/"+nodeId+"/commentCount",
+									  async: false,
+									  method: "get",
+            				dataType: "json"
+									}).responseText;
+							
+				return JSON.parse(user); 	
+		}
+		function setRate(rate,storyId,nodeid){
+	 
+				rate.html("rate("+getRateCount(storyId,nodeid)+")");
+		}
+		function setComment(comment,nodeid){
+				comment.text("comment("+getCommentCount(nodeid)+")");
+		}	
+					 
 </script>

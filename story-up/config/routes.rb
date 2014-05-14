@@ -26,10 +26,18 @@ StoryUp::Application.routes.draw do
           post ':id/follow_up'  => "nodes#follow_up"
           get  ':id/subordinates'  => "nodes#subordinates"
           get  '/nodeFirstByStryId'  => "nodes#nodeFirstByStryId"
+          get  ':id/rateCount'  => "nodes#rateCount"
         end
       end
   end
-
+  
+  resources :comments do
+    collection do
+      get ':nodeId/commentCount' => "comments#commentCount"
+      get ':nodeId/nodeComments' => "comments#list"
+    end   
+	end 
+	
   resources :users do
     collection do
       get ':id/stories' => "users#stories"

@@ -60,7 +60,24 @@ class CommentsController < ApplicationController
       format.json { head :no_content }
     end
   end
-
+  
+  def commentCount
+    @count=Comment.where("comments.node_id = ?", params[:nodeId]).count
+    respond_to do |format|
+      format.html { redirect_to comments_url }
+      format.json { render json: @count, status: :ok}
+    end
+  end
+  
+  def list
+   	@comments=Comment.where("comments.node_id = ?", params[:nodeId])
+    respond_to do |format|
+      format.html { redirect_to comments_url }
+      format.json { render json: @comments, status: :ok}
+    end
+  end
+  
+  
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_comment

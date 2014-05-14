@@ -73,8 +73,8 @@ class NodesController < ApplicationController
     @node  = Node.find(params[:id])
 
     @user_action = UserAction.record_action(@story, nil, current_user, 0)
-
-    Statistic.create_or_update_story_statistic(@story, @user_action)
+		Statistic.create_or_update_story_statistic(@story, @user_action)
+    Statistic.create_or_update_node_statistic(@story,@node, @user_action)
 
     respond_to do |format|
         format.html { head :ok }
@@ -83,6 +83,22 @@ class NodesController < ApplicationController
 
   end
 
+  # get /stories/1/nodes/1/rateCount
+  def rateCount
+
+ 	 @count=0
+   @statistic =Statistic.where("statistics.node_id = ?", params[:id]).first
+		if @statistic != nil
+			@count=@statistic.rating
+		end
+		
+    respond_to do |format|
+        format.html { head :ok }
+        format.json { render json: @count, status: :ok}
+    end
+
+  end
+  
   # POST /nodes
   # POST /nodes.json
   def create

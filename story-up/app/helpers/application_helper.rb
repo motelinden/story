@@ -19,7 +19,13 @@ module ApplicationHelper
 	def story_followers(story)
 		story.nodes.count
 	end
-
+	
+	def node_comments(node)
+	 
+		Comment.where("comments.node_id = ?", node.id).count
+		 
+	end
+	
 	def node_followers(node)
 		Node.where("nodes.parent_id = ?", node.id).count
 	end
