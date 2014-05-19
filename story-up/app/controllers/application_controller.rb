@@ -8,8 +8,7 @@ class ApplicationController < ActionController::Base
   # devise strong parameters
   protected
   def devise_parameter_sanitizer
-	p '-----------------application'
-	p resource_class
+ 
     if resource_class == User
     	p '==User'
       #User::ParameterSanitizer.new(User, :user, params)
@@ -22,7 +21,7 @@ class ApplicationController < ActionController::Base
 
  # add the first user to admin
   def after_sign_in_path_for(resoruce)
-  p '--------------------after_sign_in_path_for'
+ 
     if resource.is_a?(User)
       if User.count == 1
         resource.add_role 'admin'

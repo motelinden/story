@@ -34,6 +34,7 @@
  		   </div>
 		    
 		   <div class="row-fluid text-center">
+		   		<span id="prevNodeSpan" ><a href="#" id="prevNode" >Prev</a></span>
 		      <span id="backSpan" ><a href="#"  id="back" onclick="goTop();return false;">Back</a></span>
 					<span id="nextNodesSpan" ><a href="#" id="nextNodes" >Next</a></span>
 		   </div>
@@ -84,14 +85,14 @@
    
    		
 			//click nextNodes 
-		function nextNodes(storyId,nodeId,level){
+		function nextNodes(storyId,nodeId,level,closeTo){
 	 		  // alert("ck nextNodes  nodeId:"+nodeId+" level:"+level+" storyId:"+storyId);
 	 		  var tmp = $("#nodeSubListTemplate_"+nodeId);
 	 		  if(("nodeSubListTemplate_"+nodeId)==tmp.attr("id")){
 	 		  	return false;
 	 		  }
 	 		  
-	 		  
+	 		 
 	 		   var nodesOptions = {
             url:'/stories/'+storyId+'/nodes/'+nodeId+'/subordinates',
             method: "get",
@@ -116,9 +117,10 @@
 			 		  	    
 			 		  	 		 for(var i=0;i<data.length;i++){
 		                 var item=data[i];
-		                 addnodeSubListItem(list ,item.story_id,item.id,item.level, item.user_id,item.content,nodeId)	;
+		                 addnodeSubListItem(list ,item.story_id,item.id,item.level, item.user_id,item.content,nodeId,closeTo	);
 		               }
-			           
+			        
+           
 			            list.appendTo($("#nodeList"));
 									list.slideDown('slow')
 									var owl = list.find("#nodeSubItemTemplate");
@@ -139,7 +141,7 @@
 	 		  	return false;
 	 	};
 
- 	 	function addnodeSubListItem(list,storyId ,nodeid,level, authorid,content,pNodeId){
+ 	 	function addnodeSubListItem(list,storyId ,nodeid,level, authorid,content,pNodeId,closeTo){
 	 			
 	 			 
 	 		//	alert("addnodeSubListItem");
@@ -160,7 +162,7 @@
 						 		'slow' 
 						 	 
 						);
-						return showNode(list,storyId,nodeid,level ,authorid,content,pNodeId);
+						return showNode(storyId,nodeid,level ,authorid,content,pNodeId,"next",closeTo);
 					//return false;
 				 });
 							
@@ -169,110 +171,151 @@
 	 	
 	 	}
        // showNode 
-     function showNode(list,storyId,nodeid,level,authorId,content,pNodeId){
+       /* prevOrNext :prev ,next
+       	* closeTo: myStories
+       */
+     function showNode(storyId,nodeid,level,authorId,content,pNodeId,prevOrNext,closeTo){
      	//	list.remove();
  				
- 			
-    	var node= $("#nodeTemplate").clone();
-      node.attr('id','nodeTemplate_'+nodeid);     
-     
-							
-      node.find("#chapter").html("Chapter "+level+"<small>(Author: "+getUserJson(authorId).username+")</small>"); 
-      node.find("#content").html( content);        
-      
-      var close = node.find("#closeStory");
-      close.attr('id','closeNode_'+nodeid);     
-      close.click(function(){
-              return closeNode(node,storyId,pNodeId,level);
-               		   
-       });
-       //nextNodes
-             
-      node.find("#nextNodes").click(function(){
-              return nextNodes(storyId,nodeid,level+1);
-               		   
-       });
-       //nextNodes end
-       // new newNode
-        
-       node.find("#newNode").click(function(){
-              return showNewNode(storyId,nodeid);
-               		   
-       });
-       //newNode end
-      	//rate
-	      var rate=node.find("#rate_story_node_");
-	      rate.attr('id','rate_story_node_'+nodeid);
-	      rate.attr('action','/stories/'+storyId+'/nodes/'+nodeid+'/rate');
-	       
-	      var btnRate=node.find("#btn-rate_");
-	      btnRate.attr('id','btn-rate_'+nodeid);
-	      btnRate.click(function(){
-			 
-				 
+			 // alert(closeTo);
+ 				
+ 				var nodeTmp=$("#nodeTemplate_"+nodeid);
+ 	 		  if(("nodeTemplate_"+nodeid)==nodeTmp.attr("id")){
+ 	 		  
+	 		  	return false;
+	 		  }
+		    	var node= $("#nodeTemplate").clone();
+		      node.attr('id','nodeTemplate_'+nodeid);     
 		     
-		     var rateOptions = {
-				            url: '/stories/'+storyId+'/nodes/'+nodeid+'/rate',
-				            method: "post",
-				            dataType: "json",
-				            data: {},
-				            async: false,
-				            success: function(dataNode) {
-				              popup("+1", $("#btn-rate_"+nodeid));
-					            
-									},
-				            error: function(data){
-				               alert("showNode err");
-				               return false;
-				  }};
-				  $.ajax(rateOptions);
-					var rateCount=node.find("#rateCount");
-		      setRate(rateCount,storyId,nodeid);
-		
-		      return false;
-				 
-				  }); 
-				 
-				  var rateCount=node.find("#rateCount");
-					//rateCount.html("rate("+getRateCount(storyId,nodeid)+")");
-					setRate(rateCount,storyId,nodeid);
-					var commentLink=node.find("#commentLink");
-					//commentLink.text("comment("+getCommentCount(nodeid)+")");
-					setComment(commentLink,nodeid);
-				  
-	      // end rate       
-      node.appendTo($("#nodeList"));
-      node.show();
-      node.slideDown("slow");
-     // alert(nodeid);
-    
-  		$("#nodeSubListTemplate_"+pNodeId).remove();
-       
+									
+		      node.find("#chapter").html("Chapter "+level+"<small>(Author: "+getUserJson(authorId).username+")</small>"); 
+		      node.find("#content").html( content);        
+		      
+		      var close = node.find("#closeStory");
+		      close.attr('id','closeNode_'+nodeid);     
+		      close.click(function(){
+		              return closeNode(node,storyId,pNodeId,level,closeTo);
+		               		   
+		       });
+		      //prevNode
+		      if(level>1){
+				       			node.find("#prevNode").click(function(){
+				       					var pNode=getNodeJson(storyId,pNodeId);
+				                showNode(pNode.story_id,pNode.id,pNode.level ,pNode.user_id,pNode.content,pNode.parent_id ,"prev",closeTo); 
+				                return false;  
+				      			 });
+				    }else{
+				      			node.find("#prevNodeSpan").html("");
+				    }
+				       
+		       //nextNodes
+		             
+		      node.find("#nextNodes").click(function(){
+		              return nextNodes(storyId,nodeid,level+1,closeTo);
+		               		   
+		       });
+		       //nextNodes end
+		       // new newNode
+		        
+		       node.find("#newNode").click(function(){
+		              return showNewNode(storyId,nodeid);
+		               		   
+		       });
+		       //newNode end
+		      	//rate
+			      var rate=node.find("#rate_story_node_");
+			      rate.attr('id','rate_story_node_'+nodeid);
+			      rate.attr('action','/stories/'+storyId+'/nodes/'+nodeid+'/rate');
+			       
+			      var btnRate=node.find("#btn-rate_");
+			      btnRate.attr('id','btn-rate_'+nodeid);
+			      btnRate.click(function(){
+					 
+						 
+				     
+				     var rateOptions = {
+						            url: '/stories/'+storyId+'/nodes/'+nodeid+'/rate',
+						            method: "post",
+						            dataType: "json",
+						            data: {},
+						            async: false,
+						            success: function(dataNode) {
+						              popup("+1", $("#btn-rate_"+nodeid));
+							            
+											},
+						            error: function(data){
+						               alert("btnRate err");
+						               return false;
+						  }};
+						  $.ajax(rateOptions);
+							var rateCount=node.find("#rateCount");
+				      setRate(rateCount,storyId,nodeid);
+				
+				      return false;
+						 
+						  }); 
+						 
+						  var rateCount=node.find("#rateCount");
+							//rateCount.html("rate("+getRateCount(storyId,nodeid)+")");
+							setRate(rateCount,storyId,nodeid);
+							var commentLink=node.find("#commentLink");
+							//commentLink.text("comment("+getCommentCount(nodeid)+")");
+							setComment(commentLink,nodeid);
+						   commentLink.click(function(){
+						   		 
+								 			showComments(nodeid);
+								 });
+			      // end rate   
+			      // appendTo ,prependTo
+			    
+				   if(prevOrNext=="prev"){
+			     		 	node.prependTo($("#nodeList"));
+			      }else{
+			       		node.appendTo($("#nodeList"));
+			      }
+			      node.show();
+			      node.slideDown("slow");
+			     // alert(nodeid);
+			    
+			  		$("#nodeSubListTemplate_"+pNodeId).remove();
+	     
        
         
     	return false;
      }
    // showNode  end
 	
-		function closeNode (node,storyId,nodeid,level){
+		function closeNode (node,storyId,nodeid,level,closeTo){
 			//alert("closeNode storyId:"+storyId+"	nodeid:"+nodeid+" level:"+level);
-		
 			
-			var nodeDiv= $("#newNodeDiv");
 			 
-			nodeDiv.hide();
-			//nodeDiv.prependTo($("hideNewNodeDiv"));
-			nodeDiv.appendTo($("#hideNewNodeDiv"));
-			var nextall=node.nextAll();
-			//alert(nextall.length);
-			if(nextall.length>0){
-				for(var r=0;r< nextall.length;r++){
-					  nextall[r].remove();
+		    if(closeTo=="myStories"){
+		       
+						
+							 	$("#"+closeTo).slideDown('slow');
+							 	
+							 	
+							$("#nodeList").html("");
+		    		 	return false;
+		    }else{
+			
+						var nodeDiv= $("#newNodeDiv");
+						 
+						nodeDiv.hide();
+			 			nodeDiv.appendTo($("#hideNewNodeDiv"));
+						var nextall=node.nextAll();
+						//alert(nextall.length);
+						if(nextall.length>0){
+							for(var r=0;r< nextall.length;r++){
+								  nextall[r].remove();
+							}
+						}
+						node.slideUp("slow");
+						node.remove();
+					  
+						
+						return nextNodes(storyId,nodeid,level,closeTo);
 				}
-			}
-			node.slideUp("slow");
-			node.remove();
-			return nextNodes(storyId,nodeid,level);
 			//return false;
 		}
 		
@@ -332,21 +375,44 @@
 				return JSON.parse(count); 	
 		}
 		function getCommentCount(nodeId){
-			var user = $.ajax({
-									  url: "comments/"+nodeId+"/commentCount",
+			var commentCount = $.ajax({
+									  url: "/comments/"+nodeId+"/commentCount",
 									  async: false,
 									  method: "get",
             				dataType: "json"
 									}).responseText;
-							
-				return JSON.parse(user); 	
+			 
+				return JSON.parse(commentCount); 	
 		}
 		function setRate(rate,storyId,nodeid){
 	 
 				rate.html("rate("+getRateCount(storyId,nodeid)+")");
 		}
 		function setComment(comment,nodeid){
+			 
 				comment.text("comment("+getCommentCount(nodeid)+")");
 		}	
-					 
+	 
+		function getNodeJson(storyId,nodeId){
+		  
+			var node = $.ajax({
+									  url: "/stories/"+nodeId+"/nodes/"+nodeId,
+									  async: false,
+									  method: "get",
+            				dataType: "json"
+									}).responseText;
+			  
+				return JSON.parse(node); 	
+		}
+		function getUserJson(userId){
+ 			  var user = $.ajax({
+									  url: "/users/"+userId,
+									  async: false,
+									  method: "get",
+            				dataType: "json"
+									}).responseText;
+					  
+				return JSON.parse(user); 	
+ 		}
+					
 </script>

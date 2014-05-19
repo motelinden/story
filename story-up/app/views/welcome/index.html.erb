@@ -212,13 +212,14 @@
               //nextNodes
              
               node.find("#nextNodes").click(function(){
-               		return nextNodes(story_id,dataNode.id,dataNode.level+1);
+               		return nextNodes(story_id,dataNode.id,dataNode.level+1,"");
                		   
                });
                  
-               
+            
                
               node.appendTo($("#nodeList"));
+              node.find("#prevNodeSpan").html("");
               node.show();
              	closeStoryIndex();
             	$("#storyDiv").slideDown("slow");
@@ -231,57 +232,8 @@
     			$.ajax(options); 
 		}
  		
- 		function getUserJson(userId){
- 			  var user = $.ajax({
-									  url: "users/"+userId,
-									  async: false,
-									  method: "get",
-            				dataType: "json"
-									}).responseText;
-							
-				return JSON.parse(user); 	
- 		}
+
  		
- 		function showComments(nodeId){
- 			var rateOptions = {
-				            url: 'comments/'+nodeId+'/nodeComments',
-				            method: "get",
-				            dataType: "json",
-				            data: {},
-				            async: false,
-				            success: function(data) {
-				           		  var nodeTemplate=$("#nodeTemplate_"+nodeId);
-				            		//var commentListDiv= $("#commentListDiv"+nodeId);
-				            		var commentListDiv=$(("#commentListDiv_"+nodeId));
-				            	//	alert(commentListDiv.attr("id"));
-				            		if(("commentListDiv"+nodeId)==commentListDiv.attr("id")){
-				            				 commentListDiv.slideDown(); 
-				            		}else{
-				            		 		
-						            	 var list = $("#commentListDiv").clone();
-						            	 list.attr("id","#commentListDiv_"+nodeId);
-		 					             for(var i=0;i<data.length;i++){
-							                 var  item=data[i];
-							                 var commentTemplate=$("#commentTemplate").clone();
-							                 commentTemplate.find("#commentContent").html(item.content);
-							                 commentTemplate.find("#commentUserName").html(item.user_id);
-							                 commentTemplate.appendTo(list.find("#commentList"));
-							                 commentTemplate.show();
-							               }
-							                 
-							             list.find("#closeComment").click(function(){
-							             		list.slideUp(); 
-							             });
-		 					             list.appendTo( nodeTemplate );
-		              				 list.slideDown();
-				            		}
- 					             
-									},
-				            error: function(data){
-				               alert("showNode err");
-				               return false;
-				            }};
-				    	//		$.ajax(rateOptions);
- 		}
+ 	
  		
 </script>

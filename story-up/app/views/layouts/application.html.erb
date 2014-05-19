@@ -164,15 +164,15 @@ $(function(){
 
   
 
-
-
+ 
   $("#form-new-story").validate({
       rules: {
               "story[story_content]": {
                   required: true,
                   maxlength: 500,
-                  minlength: 50
+                  minlength: 50,
               },
+               
       },
 
       highlight: function(element) {
@@ -192,18 +192,63 @@ $(function(){
           }
       },
 
-      submitHandler: function(form) {
-       // $("#modal-new-story").modal("hide");
+      submitHandler: function(form,element) {
+       
+      var ck=clickStoryCcontent(form.story_story_content.value,$("#story_content_div"));
+        if(ck){
         $("#modal-new-story").slideUp('slow');
-        // todo  Be deeply grateful word filter
-
-         form.submit();
-  	 
+          form.submit();
+  	 		} 
 				 
       } 
   });
+  
+  
 })
- 
+		function  clickStoryCcontent (storyCcontent,div){
+		  var ret=false;
+				 	var options = {
+				            url: '/qqopen/'+storyCcontent+'/word_filter/',
+				            method: "get",
+				            dataType: "json",
+				            data: {},
+				            async: false,
+				            success: function(data) {
+				           
+				            //alert("data.is_dirty:"+data.is_dirty)
+				            	//var div= $("#story_content_div");
+				            	if(data.ret == 0){
+					            		if(1==data.is_dirty){
+	  	 			 					    div.addClass('has-error');
+	    	 			  					var errMsg=jQuery( "<span for='story_story_content' class='help-block'>Please  the story,There are sensitive words.</span>");
+	  	 			  					  //errMsg.text(data.msg);
+	  	 			  					  errMsg.appendTo(div.find(".input-group"));
+	  	 			  					   ret= false;
+					            	}else{
+						            	 div.removeClass('has-error');
+						            	 var errMsg=div.find(".help-block");
+						            	 errMsg.remove();
+						            	 ret= true;
+					            	}
+				            	}else{
+				            			 div.addClass('has-error');
+	    	 			  					var errMsg=jQuery( "<span for='story_story_content' class='help-block'>Please  the story,There are sensitive words.</span>");
+	  	 			  					   errMsg.text("System is busy, please later ");
+	  	 			  					  errMsg.appendTo(div.find(".input-group"));
+	  	 			  					   ret= false;
+				            	}
+				            	
+ 				             	
+				             // alert("ret:"+data.ret+" is_dirty:"+data.is_dirty+" msg:"+data.msg );
+					           return ret;
+									},
+				            error: function(data){
+				               alert("clickStoryCcontent err");
+				               return false;
+				            }};
+				    			$.ajax(options);
+				  return ret;
+		}
 </script>
 
 </html>

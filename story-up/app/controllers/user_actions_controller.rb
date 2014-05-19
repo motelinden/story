@@ -60,7 +60,23 @@ class UserActionsController < ApplicationController
       format.json { head :no_content }
     end
   end
-
+  
+  def deleteBynodeIdUserId
+   
+    @user_action=UserAction.where("node_id=? AND user_id=?",params[:nodeId],params[:userId])
+   
+    
+    @user_action.each do |action|
+    	 action.destroy
+    	 
+    end
+    
+    
+    respond_to do |format|
+      format.html {head :ok } 
+      format.json { render json: @user_action, status: :ok }
+    end
+	end 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user_action

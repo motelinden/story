@@ -1,5 +1,5 @@
  
-<div id="commentListDiv" >
+<div id="commentListTemplate" >
    
       <div id="nodeChapter">
 			   <button type="button" class="close" onclick="" id="closeComment" >&times;</button>
@@ -9,8 +9,12 @@
         
        
 			<div id="commentList"></div>
-
+			<div   class="row-fluid text-right">
+					<span id="newCommentSpan" style=""><a href="#" id="newComment"   onclick="">Comment the</a></span>
+		   </div>
     	<div class="view-line"> </div>
+      <div id="commentEdit"></div>
+    	
 </div>
 
 <div id="commentTemplate">
@@ -21,11 +25,57 @@
 			<h   id="commentUserName"></h>
 		</div>
 </div>
+ <%= render "comments/newComment" %>
 <script>
- $("#commentListDiv").hide();
+ $("#commentListTemplate").hide();
  $("#commentTemplate").hide();
  
     $(function() {
   });
-     
+  function showComments(nodeId){
+ 			var rateOptions = {
+				            url: '/comments/'+nodeId+'/nodeComments',
+				            method: "get",
+				            dataType: "json",
+				            data: {},
+				            async: false,
+				            success: function(data) {
+				            	 var nodeTemplate=$("#nodeTemplate_"+nodeId);
+				            	 var commentListDiv=$("#commentListTemplate_"+nodeId);
+				            	// alert(tmp.attr("id"));
+				            	 if(("commentListTemplate_"+nodeId)==commentListDiv.attr("id")){
+				            	 			commentListDiv.slideDown('slow');
+				            	 			return false;
+				            	 }else{
+						            	 commentListDiv = $("#commentListTemplate").clone();
+								           commentListDiv.attr("id","commentListTemplate_"+nodeId);
+								           for(var i=0;i<data.length;i++){
+									                 var  item=data[i];
+									                 var commentTemplate=$("#commentTemplate").clone();
+									                 commentTemplate.find("#commentContent").html(item.content);
+									                 commentTemplate.find("#commentUserName").html(getUserJson(item.user_id).username);
+									                 commentTemplate.appendTo(commentListDiv.find("#commentList"));
+									                 commentTemplate.show();
+									          }
+									          commentListDiv.find("#closeComment").click(function(){
+									             commentListDiv.slideUp(); 
+									             });
+				 					          commentListDiv.appendTo( nodeTemplate );
+				              		  commentListDiv.slideDown();
+				            	 }
+				            	 var newComment=commentListDiv.find("#newComment");
+				            	 newComment.attr("id","newComment_"+nodeId);
+				           		 newComment.click(function(){
+											 			showNewComment(nodeId);
+											 			return false;
+											 });
+ 					             
+									},
+				            error: function(data){
+				               alert("showComments err");
+				               return false;
+				            }};
+				    			$.ajax(rateOptions);
+ 		}	 
+   
 </script>

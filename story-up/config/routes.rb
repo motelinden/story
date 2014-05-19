@@ -38,6 +38,13 @@ StoryUp::Application.routes.draw do
     end   
 	end 
 	
+	resources :qqopen do
+    collection do
+     
+      get ':content/word_filter' => "qqopen#word_filter"
+    end   
+	end 
+	
   resources :users do
     collection do
       get ':id/stories' => "users#stories"
@@ -46,7 +53,12 @@ StoryUp::Application.routes.draw do
   end
   resources :statistics
   resources :user_actions
-
+	resources :user_actions do
+    collection do
+      delete ':nodeId/:userId' => "user_actions#deleteBynodeIdUserId"
+       
+    end
+  end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

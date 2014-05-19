@@ -17,7 +17,7 @@
       </div>
                <div class="modal-body text-center">
 
-               <div class="form-group">
+               <div id="node_content_div" class="form-group">
                 <div class="input-group">
                   <textarea class="form-control" cols="120" id="node_content" name="node[content]" placeholder="" rows="10"></textarea>
                 </div>
@@ -81,8 +81,9 @@
         	//	from.dataType="json";
           //  form.submit();
        
-             
-						var options = {
+        var ck=clickStoryCcontent(form.node_content.value,  $("#node_content_div"));
+        if(ck){
+          var options = {
 		          dataType: "json",
 		          success: function(data) {
 		          //	alert("ok");
@@ -108,6 +109,9 @@
             }};
 		
 		    jQuery(form).ajaxSubmit(options);
+          
+  	 		} 
+						
 						 
 					 return false;
 						

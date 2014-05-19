@@ -42,5 +42,15 @@ module ApplicationHelper
 			text
 		end
 	end
-
+	
+	def node_read_time(userId,nodeId)
+		 
+		@action=UserAction.where("user_actions.node_id = ? AND user_actions.user_id=?", nodeId,userId).order("user_actions.updated_at desc").first
+		#@action=Node.where("nodes.id = ?  ", 0).first
+		if(@action!=  nil)
+			@read_time=@action.updated_at.strftime("%Y-%m-%d [%H:%M]")
+		else
+	 		@read_time=""
+	 	end
+	end
 end

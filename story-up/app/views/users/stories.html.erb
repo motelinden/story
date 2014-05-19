@@ -1,5 +1,5 @@
 <h1 class="pager">My Stories</h1>
-<div class="container-fluid demo">
+<div class="container-fluid demo" id="myStories">
     <%= render "welcome/nav2" %>
     
     <% if @stories.nil? %>
@@ -19,7 +19,7 @@
 					                			 
 					     </div>
 							<div   class="item" style="width:400px" >
-							 					    	  <a href="#" id="noedSubShow">
+ 							 					    	  <a href="#"  onClick="showMyNode('<%=story.id%>','<%=node.id%>','<%=node.level%>','<%=node.user_id%>','<%=node.content%>','<%=node.parent_id%>');return false;" id="noedSubShow_<%=node.id%>">
 												      		<p class="story-con-p" id='noedSubContent'>
 																			<%= short_text(50,node.content) %>
 												      		</p>
@@ -27,7 +27,7 @@
 							</div>
 							 <div class="pager page">
 					                				<h4 id="noedSubAuthor">有<%=node_followers(node)%>个人接着写 </h4>
-					                			<h4 id="noedSubAuthor">有N个评论<%=node_comments(node)%> </h4>
+					                			<h4 id="noedSubAuthor">有<%=node_comments(node)%>个评论 </h4>
 					     </div>
 					</div>
 				<% end %>
@@ -40,8 +40,9 @@
     <div class="view-line">
     </div>
 </div>
-
-
+<div id="nodeList"></div>
+ <%= render "nodes/nodeBody" %>
+ <%= render "comments/commentsList" %>
 <script>
 
    $(function() {
@@ -51,10 +52,22 @@
       <% @stories.each do |story| %>
 					var owl = $("#owl-demo<%=story.id%>");
 		      initCarousel(owl, "", "");
-		     	owl.trigger('owl.play',2000);
+		     	//owl.trigger('owl.play',2000);
+		    
      	<% end %>
       
    <% end %>
+   
+   
      });
+     function showMyNode(storyId,nodeId,level ,authorId,content,pNodeId){
+     	$("#myStories").slideUp('slow');
+       
      
+     	
+      	return showNode(storyId,nodeId,level ,authorId,content,pNodeId,"next","myStories");
+     	//getNodeJson(storyId,nodeId);
+     	//return false;
+     	
+     }
 </script>

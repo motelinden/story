@@ -1,14 +1,15 @@
-<div class="demo" >
+ <h1 class="pager page-title">My Readings</h1>
+<div class="demo"  id="myStories">
     <%= render "welcome/nav2" %>
     <div class="container-fluid">
-        <h1 class="pager page-title">My Readings</h1>
+       
         <% if @stories.nil? %>
             <!-- have no stories -->
         <% else %>
           <% @stories.each do |story| %>
             <h1 class="pager view-line"></h1>
             <h2 class="pagination">
-                <%= link_to story_path(story) do %>Story <%= story.id %><% end %>
+                 Story <%= story.id %> 
             </h2>
 
             <div id="nodes" class="row story-container" > 
@@ -16,30 +17,32 @@
                         <!-- <a id="prev-level-<= level %>"><div class="left-arrow"></div></a> -->
 
                         <div class="col-md-12 owl-content">
-
-                            <div id="owl-demo-<%= story.id %>" class="owl-demo owl-carousel">
+																		
+                            <div id="owl-demo<%= story.id %>" class="owl-demo owl-carousel">
+                            
+                            <% p story.id %>
                                     <% @nodes.each do |node| %>
-
+																				 
                                         <% if node.story_id == story.id %>
-
-                                            <div class="item-body">
+																							
+                                            <div class="item-body" id="itemBody_<%=node.id%>">
 
                                                 <div class="item-level">
                                                     Chapter <%= node.level %>
                                                 </div>
 
-                                                <div class="item">
-                
-                                                    <p>
-                                                        <%= link_to story_node_path(story, node) do %>
-                                                            <%= short_text(50, node.content) %>
-                                                        <% end %>
-                                                    </p>
+                                                <div class="item" id="item_<%=node.id%>" nodeid="<%=node.id%>">
+                                                   
+                                                    <a href="#"  onClick="showMyNode('<%=story.id%>','<%=node.id%>','<%=node.level%>','<%=node.user_id%>','<%=node.content%>','<%=node.parent_id%>');return false;" id="noedSubShow_<%=node.id%>">
+																						      		<p class="story-con-p" id='noedSubContent'>
+																													<%= short_text(50,node.content) %>
+																						      		</p>
+																						        </a>
 
                                                 </div>
 
                                                 <div class="item-follows">
-                                                    <%= node_followers(node) %> follows
+                                                    <%=  node_read_time(current_user.id,node.id) %>  
                                                 </div>
 
                                             </div>
@@ -64,32 +67,89 @@
         </div>
     </div>
 </div><!-- demo -->
-
+<div id="nodeList"></div>
+ <%= render "nodes/nodeBody" %>
+ <%= render "comments/commentsList" %>
 <script type="text/javascript">
 
     $(function() {
 
-        var owls = $(".owl-demo");
+     <% if @stories.nil? %>
+        <!-- have no stories -->
+   <% else %>
+      <% @stories.each do |story| %>
+					var owl = $("#owl-demo<%=story.id%>");
+					var item=owl.find(".item");
+					item.mouseenter(function(){
+						 var thisDiv=$("#"+jQuery(this).attr("id"));
+						 var rm= thisDiv.find("#closeItem_"+thisDiv.attr("nodeid"));
+					   if(rm.attr("id")== ("closeItem_"+thisDiv.attr("nodeid"))){
+					   
+					  
+					   }else{
+					    rm=jQuery('<button type="button" class="close"   id="closeItem_'+thisDiv.attr("nodeid")+'" >&times;</button>');
+					    rm.click(function(){
+					    var nodeId=thisDiv.attr("nodeid");
+									  var options = {
+				            url:'/user_actions/'+nodeId+'/<%=current_user.id%>',
+				            method: "delete",
+				            dataType: "json",
+				            data: {},
+				            success: function(data) {
+				               
+				              	var rmItem=$("#itemBody_"+nodeId);
+				              	
+				              	rmItem.animate({
+												left:'0px',
+												opacity:'0',
+												height:'0px',
+											  width:'0px'			     
+												} ,
+										 		'slow',
+										 		 rmItem.remove()
+										 		);
+				             },
+				            error: function(data){
+				               alert("err"+ data.status);
+				               return false;
+				            }
+				           };
+				    		 	$.ajax(options);
+    		 	
+    		 	
+					     
+					    });
+					    rm.prependTo(thisDiv);
+					   
+					  	
+					  }
+					});
+					item.mouseleave(function(){
+						 var thisDiv=$("#"+jQuery(this).attr("id"));
+						 var rm= thisDiv.find("#closeItem_"+thisDiv.attr("nodeid"));
+					   if(rm.attr("id")== ("closeItem_"+thisDiv.attr("nodeid"))){
+					   	rm.remove();
+					   }
+					//  alert("mouseleave:"+jQuery(this).attr("id"));
+					});
+					
+		      initCarousel(owl, "", "");
+		     	//owl.trigger('owl.play',2000);
+		    
+     	<% end %>
+      
+   <% end %>
 
-        owls.each(function() {
-
-            console.log($(this).attr("id"));
-            id = "#"+ $(this).attr("id");
-            var owl = $(id);
-
-            initCarousel(owl, "", "");
-
-        });
-
-      /*$(".story-container").mouseover(function(){
-        $(".left-arrow").show();
-        $(".right-arrow").show();
-      });
-
-      $(".story-container").mouseout(function(){
-        $(".left-arrow").hide();
-        $(".right-arrow").hide();
-      });*/
+      
     });
-
+ function showMyNode(storyId,nodeId,level ,authorId,content,pNodeId){
+     	$("#myStories").slideUp('slow');
+       
+     
+     	
+      	return showNode(storyId,nodeId,level ,authorId,content,pNodeId,"next","myStories");
+     	//getNodeJson(storyId,nodeId);
+     	//return false;
+     	
+     }
 </script>
