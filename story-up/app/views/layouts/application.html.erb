@@ -15,7 +15,9 @@
 <body>
 <%= yield %>
 </body>
-
+<script type="text/javascript" charset="utf-8" 
+   src="http://fusion.qq.com/fusion_loader?appid=1101248465&platform=qzone">
+</script>
 <script type="text/javascript">
 
 $(function(){
@@ -25,6 +27,7 @@ $(function(){
     $("#modal-sign-up").modal("hide");
     e.preventDefault? e.preventDefault() : e.returnValue = false; 
     $("#modal-sign-in").modal("show");
+  // fusion2.dialog.relogin()
   });
 
   // sign-up click
@@ -208,10 +211,10 @@ $(function(){
 		function  clickStoryCcontent (storyCcontent,div){
 		  var ret=false;
 				 	var options = {
-				            url: '/qqopen/'+storyCcontent+'/word_filter/',
+				            url: '/qqopen/word_filter/',
 				            method: "get",
 				            dataType: "json",
-				            data: {},
+				            data: {content:storyCcontent},
 				            async: false,
 				            success: function(data) {
 				           
@@ -230,11 +233,20 @@ $(function(){
 						            	 errMsg.remove();
 						            	 ret= true;
 					            	}
+				            	}else if(1002==data.ret ){
+				            			 div.addClass('has-error');
+	    	 			  					 var errMsg=jQuery( "<span for='story_story_content' class='help-block'></span>");
+	  	 			  					   errMsg.text(data.msg);
+	  	 			  					  
+	  	 			  					   errMsg.appendTo(div.find(".input-group"));
+	  	 			  					   ret= false;
+	  	 			  					   fusion2.dialog.relogin();
 				            	}else{
 				            			 div.addClass('has-error');
-	    	 			  					var errMsg=jQuery( "<span for='story_story_content' class='help-block'>Please  the story,There are sensitive words.</span>");
-	  	 			  					   errMsg.text("System is busy, please later ");
-	  	 			  					  errMsg.appendTo(div.find(".input-group"));
+	    	 			  					 var errMsg=jQuery( "<span for='story_story_content' class='help-block'></span>");
+	  	 			  					  errMsg.text("System is busy, please later ");
+	  	 			  					  
+	  	 			  					   errMsg.appendTo(div.find(".input-group"));
 	  	 			  					   ret= false;
 				            	}
 				            	
@@ -243,7 +255,8 @@ $(function(){
 					           return ret;
 									},
 				            error: function(data){
-				               alert("clickStoryCcontent err");
+				            	 
+				              //  alert("clickStoryCcontent err:"+data.msg);
 				               return false;
 				            }};
 				    			$.ajax(options);

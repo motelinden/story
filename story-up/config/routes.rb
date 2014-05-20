@@ -41,7 +41,7 @@ StoryUp::Application.routes.draw do
 	resources :qqopen do
     collection do
      
-      get ':content/word_filter' => "qqopen#word_filter"
+      get '/word_filter' => "qqopen#word_filter"
     end   
 	end 
 	
